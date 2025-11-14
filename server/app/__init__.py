@@ -11,6 +11,6 @@ def create_app():
     bcrypt.init_app(app)
     cors.init_app(app)
 
-    from server.app import routes_mold
+    from app import routes 
     
     return app

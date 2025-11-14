@@ -1,7 +1,6 @@
 # app/routes.py
 from flask import Blueprint, session, request, jsonify, render_template_string
-from .models_mold import User, Category, Product
-from .models_mold import user_schema, users_schema, category_schema, categories_schema, product_schema, products_schema
+from .models import User, Song, Genre, Status, Link
 from .extensions import db, bcrypt
 
 bp = Blueprint('main', __name__, url_prefix='')
