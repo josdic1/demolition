@@ -117,21 +117,43 @@ class GenreSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Genre
         load_instance = True
+    
+    id = ma.auto_field(dump_only=True)
+    name = ma.auto_field()
 
 class StatusSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Status
         load_instance = True
+    
+    id = ma.auto_field(dump_only=True)
+    name = ma.auto_field()
 
 class LinkSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Link
         load_instance = True
+        exclude = ['song_id']  # Don't need FK
+    
+    id = ma.auto_field(dump_only=True)
+    url_type = ma.auto_field()
+    url_link = ma.auto_field()
 
 class SongSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Song
         load_instance = True
+        exclude = ['user_id', 'genre_id', 'status_id']
+    
+    id = ma.auto_field(dump_only=True)
+    title = ma.auto_field()
+    artist = ma.auto_field()
+    about = ma.auto_field()
+    lyrics = ma.auto_field()
+    bpm = ma.auto_field()
+    key = ma.auto_field()
+    created_at = ma.auto_field(dump_only=True)
+    updated_at = ma.auto_field(dump_only=True)
     
     genre = ma.Nested(GenreSchema, only=['id', 'name'])
     status = ma.Nested(StatusSchema, only=['id', 'name'])
