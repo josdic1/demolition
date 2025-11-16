@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEMOLITION COMMAND CENTER</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='command.css') }}">
+</head>
+<body>
+    <div class="system-screen">
+        <div class="monitor-frame">
+            
+            <header class="hud-header">
+                <div class="header-title">DEMOLITION SYSTEM // COMMAND CENTER</div>
+                <div class="header-status">
+                    <span class="status-label">SYS HEALTH:</span>
+                    <div class="health-bar-container">
+                        <div class="health-bar"></div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="main-hud-grid">
+                
+                <section class="hud-panel media-panel">
+                    <h3 class="panel-title">SYSTEM DATA</h3>
+                    
+                    <div class="globe-data">
+                        <div class="globe-sphere"></div>
+                        <div class="globe-stats">
+                            <p>UPLINK: ACTIVE</p>
+                            <p>SONGS: <span id="song-count">--</span></p>
+                            <p>STATUS: ONLINE</p>
+                        </div>
+                    </div>
+
+                    <div class="timestamp" id="timestamp"></div>
+                    
+                    <div class="dials-placeholder">
+                        <div class="dial">☢</div>
+                        <div class="dial">☢</div>
+                    </div>
+                </section>
+                
+                <section class="hud-panel activity-panel">
+                    <h3 class="panel-title">COMMAND INTERFACE</h3>
+                    
+                    <div class="output-screen" id="output">&gt; SYSTEM READY...
+&gt; ALL SYSTEMS NOMINAL
+&gt; AWAITING COMMAND INPUT...</div>
+
+                    <div class="button-grid">
+                        <button class="control-btn" onclick="showAllSongs()">SONGS</button>
+                        <button class="control-btn" onclick="showAllArtists()">ARTISTS</button>
+                        <button class="control-btn" onclick="showAllGenres()">GENRES</button>
+                        <button class="control-btn" onclick="showAllStatuses()">STATUS</button>
+                        <button class="control-btn" onclick="clearScreen()">CLEAR</button>
+                        <button class="control-btn" onclick="seedDB()">SEED</button>
+                        <button class="control-btn" onclick="updateSeedFile()">REFRESH SEED</button>
+                        <button class="control-btn danger" onclick="nukeDB()">NUKE DB</button>
+                        <button class="control-btn danger" onclick="removeDB()">RM INSTANCE/</button>
+                    </div>
+                </section>
+                
+                <section class="hud-panel data-panel">
+                    <h3 class="panel-title">DATA STREAM</h3>
+                    
+                    <div class="data-stream-wrapper">
+                        <pre class="data-stream" id="data-stream">&gt; DATA STREAM INITIALIZED
+&gt; MONITORING...</pre>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='command.js') }}"></script>
+</body>
+</html>

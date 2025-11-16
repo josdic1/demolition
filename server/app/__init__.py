@@ -11,6 +11,11 @@ def create_app():
     bcrypt.init_app(app)
     cors.init_app(app)
 
-    from app import routes 
+    # Register blueprints
+    from app.routes import bp
+    from app.static_routes.command import command_bp
+    
+    app.register_blueprint(bp)
+    app.register_blueprint(command_bp)
     
     return app
