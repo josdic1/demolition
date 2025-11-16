@@ -1,19 +1,29 @@
 import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export function LoginPage() {
     const { login } = useAuth();
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        login({
+        
+        const result = await login({
             email: formData.get('email'),
             password: formData.get('password')
         });
+        
+        if (result.success) {
+            console.log("Login successful");
+            navigate('/');  // Redirect to wherever
+        } else {
+            console.error("Login failed:", result.error);
+            // Show error to user
+        }
     };
 
     return (
-      <>
         <div>
             <h1>Login</h1>
             <form onSubmit={handleSubmit}>
@@ -22,6 +32,5 @@ export function LoginPage() {
                 <button type="submit">Login</button>
             </form>
         </div>
-        </>
     );
 }

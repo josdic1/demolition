@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true); 
     const [inEditMode, setInEditMode] = useState(false);
 
     const loggedIn = Boolean(user);
@@ -27,12 +28,13 @@ const checkSession = async () => {
                 // If 'logged_in' is false, ensure 'user' is null
                 setUser(null); 
             }
-            // --------------------
         }
-    } catch (error) {
-        console.error("Error checking session:", error);
+          } catch (error) {
+            console.error("Error checking session:", error);
+        } finally {
+            setLoading(false);  // Add this
+        }
     }
-}
     
 async function login(credentials) {
   try {
@@ -46,12 +48,15 @@ async function login(credentials) {
     if (res.ok) {
       const data = await res.json();
       setUser(data);
+      return { success: true };
     } else {
       const error = await res.json();
       console.error('Login failed:', error);
+      return { success: false, error: error.error };  
     }
   } catch (err) {
     console.error(err);
+    return { success: false, error: 'Network error' };  
   }
 }
 
@@ -67,15 +72,17 @@ const logout = async () => {
     }
 };
   const value = useMemo(() => ({ 
+        loading,
         loggedIn,
         login,
         logout,
         user,
-        setUser, 
+        setUser,
+        loading,
         inEditMode, 
         setInEditMode
     }), 
-    [user, setUser, inEditMode, setInEditMode]);
+    [user, loading, loggedIn, inEditMode]);
 
   return (
     <>

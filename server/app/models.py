@@ -103,15 +103,6 @@ class Link(db.Model):
 # Schemas
 # -------------------------------------------------
 
-class UserSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = User
-        load_instance = True
-        exclude = ['password_hash']
-    
-    id = ma.auto_field(dump_only=True)
-    name = ma.auto_field()
-    email = ma.auto_field()
 
 class GenreSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -155,9 +146,21 @@ class SongSchema(ma.SQLAlchemyAutoSchema):
     created_at = ma.auto_field(dump_only=True)
     updated_at = ma.auto_field(dump_only=True)
     
+    user = ma.Nested('UserSchema', only=['id', 'name', 'email'])  # Add this
     genre = ma.Nested(GenreSchema, only=['id', 'name'])
     status = ma.Nested(StatusSchema, only=['id', 'name'])
     links = ma.Nested(LinkSchema, many=True)
+
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        load_instance = True
+        exclude = ['password_hash']
+    
+    id = ma.auto_field(dump_only=True)
+    name = ma.auto_field()
+    email = ma.auto_field()
+    songs = ma.Nested('SongSchema', many=True, exclude=['user']) 
 
 # Schema instances
 user_schema = UserSchema()

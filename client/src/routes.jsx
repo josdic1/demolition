@@ -2,6 +2,7 @@ import { App } from './App.jsx';
 import { ErrorPage } from './pages/ErrorPage.jsx';
 import { HomePage } from './pages/HomePage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
+import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 
 export const routes = [
     {
@@ -10,8 +11,12 @@ export const routes = [
         errorElement: <ErrorPage />,
         children: [
             {
+                
                 index: true,
-                element: <HomePage />,
+                element: 
+                    <ProtectedRoute>
+                        <HomePage />
+                    </ProtectedRoute>,
             }, {
                 path: 'login',
                 element: <LoginPage />,
