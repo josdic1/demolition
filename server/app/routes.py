@@ -9,6 +9,9 @@ bp = Blueprint('main', __name__, url_prefix='')
 # -------------------------------------------------
 # Routes (API)
 # -------------------------------------------------
+@bp.route('/')
+def index():
+    return jsonify({"message": "Demolition API"})
 
 @bp.route('/check_session')
 def check_session():
@@ -20,10 +23,51 @@ def check_session():
         })
     return jsonify({"logged_in": False})
 
+@bp.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    name = data.get('name')
+    
+    # Check if user exists
+    if User.query.filter_by(email=email).first():
+        return jsonify({"error": "Email already registered"}), 400
+    
+    # Create new user
+    new_user = User(email=email, name=name)
+    new_user.set_password(password)  # The set_password method I defined in the User model
+    
+    db.session.add(new_user)
+    db.session.commit()
+    
+    # Auto-login
+    session['user_id'] = new_user.id # Put user id in session to log them in manually
+    
+    return jsonify({
+        "message": "Signup successful",
+        "user": user_schema.dump(new_user)
+    }), 201
 
-@bp.route('/')
-def index():
-    return jsonify({"message": "Demolition API"})
+@bp.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    if not data or 'email' not in data or 'password' not in data:
+        return jsonify({"error": "Email & password required"}), 400
+    
+    user = User.query.filter_by(email=data['email']).first()
+    if user and user.check_password(data['password']):  # check_password method from User model
+        session['user_id'] = user.id
+        session['name'] = user.name
+        
+        return jsonify(user_schema.dump(user)), 200
+    
+    return jsonify({"error": "Invalid credentials"}), 401
+
+@bp.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({"message": "Logout successful"}), 200
 
 
 @bp.route('/songs', methods=['GET'])

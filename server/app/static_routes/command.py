@@ -15,14 +15,13 @@ def command_center():
 
 
 @command_bp.route('/seed', methods=['POST'])
-def seed_database():
+def seed():
     from seed import seed_database
     try:
         seed_database()
         return jsonify({'message': 'Database seeded successfully!'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 @command_bp.route('/nuke', methods=['POST'])
 def nuke_database():
