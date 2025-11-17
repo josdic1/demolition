@@ -2,11 +2,10 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export function ProtectedRoute({ children }) {
-    const { loggedIn, user } = useAuth();
+    const { loggedIn, loading } = useAuth();
     
     // Wait for session check to complete
-    if (user === null && !loggedIn) {
-        // Still checking session, show loading
+    if (loading) {
         return <div>Loading...</div>;
     }
     

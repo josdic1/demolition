@@ -1,34 +1,43 @@
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export function LoginPage() {
     const { login } = useAuth();
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+    const [error, setError] = useState(null);
 
+
+   const onFormChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
+        setError(null);
         
-        const result = await login({
-            email: formData.get('email'),
-            password: formData.get('password')
-        });
+        const result = await login(formData); 
         
         if (result.success) {
-            console.log("Login successful");
-            navigate('/');  // Redirect to wherever
+            navigate('/');
         } else {
-            console.error("Login failed:", result.error);
-            // Show error to user
+            setError(result.error);
         }
     };
-
     return (
         <div>
             <h1>Login</h1>
             <form onSubmit={handleSubmit}>
-                <input name="email" type="email" placeholder="Email" required />
-                <input name="password" type="password" placeholder="Password" required />
+                {error && <div style={{ color: 'red' }}>{error}</div>}
+                <input name="email" type="email" onChange={onFormChange} value={formData.email} placeholder="Email" required />
+                <input name="password" type="password" onChange={onFormChange} value={formData.password} placeholder="Password" required />
                 <button type="submit">Login</button>
             </form>
         </div>
