@@ -25,13 +25,13 @@ async function showAllSongs() {
     }
 }
 
-async function showAllArtists() {
-    addOutput('Fetching all artists...');
-    addToDataStream('> FETCHING ALL ARTISTS...');
+async function showAllLinks() {
+    addOutput('Fetching all links...');
+    addToDataStream('> FETCHING ALL LINKS...');
     try {
-        const response = await fetch('http://localhost:5555/artists');
+        const response = await fetch('http://localhost:5555/links');
         const data = await response.json();
-        addOutput(`Retrieved ${data.length} artists`);
+        addOutput(`Retrieved ${data.length} links`);
         addToDataStream(JSON.stringify(data, null, 2));
     } catch (error) {
         addOutput('ERROR: ' + error.message);

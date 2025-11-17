@@ -1,9 +1,6 @@
 from flask import Blueprint, jsonify, render_template
 from app.extensions import db
-from app.models import User, Link, Song, Genre, Status
-from app.models import user_schema, users_schema, link_schema, links_schema
-from app.models import song_schema, songs_schema, genre_schema, genres_schema
-from app.models import status_schema, statuses_schema
+from app.models import User, Link, Song, Genre, Status, song_schema, songs_schema, genre_schema, genres_schema, song_schema, songs_schema, genre_schema, genres_schema, status_schema, statuses_schema
 import os
 
 command_bp = Blueprint('command', __name__)

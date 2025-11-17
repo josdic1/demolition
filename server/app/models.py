@@ -108,7 +108,7 @@ class GenreSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Genre
         load_instance = True
-    
+
     id = ma.auto_field(dump_only=True)
     name = ma.auto_field()
 
@@ -134,7 +134,7 @@ class SongSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Song
         load_instance = True
-        exclude = ['user_id', 'genre_id', 'status_id']
+        # DON'T exclude the _id fields anymore
     
     id = ma.auto_field(dump_only=True)
     title = ma.auto_field()
@@ -146,10 +146,16 @@ class SongSchema(ma.SQLAlchemyAutoSchema):
     created_at = ma.auto_field(dump_only=True)
     updated_at = ma.auto_field(dump_only=True)
     
-    user = ma.Nested('UserSchema', only=['id', 'name', 'email'])  # Add this
-    genre = ma.Nested(GenreSchema, only=['id', 'name'])
-    status = ma.Nested(StatusSchema, only=['id', 'name'])
-    links = ma.Nested(LinkSchema, many=True)
+    # Accept these when creating/updating (POST/PATCH)
+    user_id = ma.auto_field(load_only=True)
+    genre_id = ma.auto_field(load_only=True)
+    status_id = ma.auto_field(load_only=True)
+    
+    # Return these when fetching (GET)
+    user = ma.Nested('UserSchema', only=['id', 'name', 'email'], dump_only=True)
+    genre = ma.Nested(GenreSchema, only=['id', 'name'], dump_only=True)
+    status = ma.Nested(StatusSchema, only=['id', 'name'], dump_only=True)
+    links = ma.Nested(LinkSchema, many=True, dump_only=True)
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

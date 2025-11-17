@@ -2,92 +2,115 @@ import { AuthContext } from "../contexts/AuthContext";
 import { useState, useEffect, useMemo } from "react";
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
+    const [userInfo, setUserInfo] = useState(null);  // Just { id, name, email }
+    const [userSongs, setUserSongs] = useState([]);  // Just songs array
     const [loading, setLoading] = useState(true); 
     const [inEditMode, setInEditMode] = useState(false);
 
-    const loggedIn = Boolean(user);
+    const loggedIn = Boolean(userInfo);
     const API_URL = "http://localhost:5555";
-
-
 
     useEffect(() => {
         checkSession();
     }, []);
 
-const checkSession = async () => {
-    try {
-        const response = await fetch(`${API_URL}/check_session`, {
-            credentials: 'include'
-        });
-        if (response.ok) {
-            const userData = await response.json();
-            
-            if (userData.logged_in) {
-                setUser(userData.user); 
-            } else {
-                setUser(null); 
+    const checkSession = async () => {
+        try {
+            const response = await fetch(`${API_URL}/check_session`, {
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const userData = await response.json();
+                
+                if (userData.logged_in) {
+                    const { songs, ...info } = userData.user;
+                    setUserInfo(info);  // { id, name, email }
+                    setUserSongs(songs || []);  // songs array
+                } else {
+                    setUserInfo(null);
+                    setUserSongs([]);
+                }
             }
+        } catch (error) {
+            console.error("Error checking session:", error);
+        } finally {
+            setLoading(false);
         }
-    } catch (error) {
-        console.error("Error checking session:", error);
-    } finally {
-        setLoading(false);
     }
-}
     
-async function login(credentials) {
-  try {
-    const res = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(credentials)  
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      setUser(data);
-      return { success: true };
-    } else {
-      const error = await res.json();
-      console.error('Login failed:', error);
-      return { success: false, error: error.error };  
+    async function login(credentials) {
+        try {
+            const res = await fetch(`${API_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(credentials)  
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                const { songs, ...info } = data;
+                setUserInfo(info);
+                setUserSongs(songs || []);
+                return { success: true };
+            } else {
+                const error = await res.json();
+                return { success: false, error: error.error };  
+            }
+        } catch (err) {
+            return { success: false, error: 'Network error' };  
+        }
     }
-  } catch (err) {
-    console.error(err);
-    return { success: false, error: 'Network error' };  
-  }
-}
 
-const logout = async () => {
+    const logout = async () => {
+        try {
+            await fetch(`${API_URL}/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+            setUserInfo(null);
+            setUserSongs([]);
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
+
+      //================= Delete Song =================//
+  const deleteSong = async (id) => {
+    const updatedSongs = userSongs.filter((song) => song.id !== id);
     try {
-        await fetch(`${API_URL}/logout`, {
-            method: 'POST',
-            credentials: 'include'
-        });
-        setUser(null);  // Clear user from context
+      const response = await fetch(`${API_URL}/songs/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to delete song');
+      setUserSongs(updatedSongs);
+      return await response.json();
     } catch (error) {
-        console.error('Logout error:', error);
+      console.error("Error deleting song:", error);
+      throw error;
     }
-};
-  const value = useMemo(() => ({ 
+  }
+
+    const value = useMemo(() => ({ 
         loading,
         loggedIn,
         login,
         logout,
-        user,
-        setUser,
+        checkSession,
+        userInfo,
+        userSongs,
+        setUserSongs,
+        deleteSong, 
         inEditMode, 
         setInEditMode
     }), 
-    [user, loading, loggedIn, inEditMode]);
+    [userInfo, userSongs, loading, loggedIn, inEditMode]);
 
-  return (
-    <>
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-    </>
-  )
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    )
 }

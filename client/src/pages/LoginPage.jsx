@@ -1,15 +1,21 @@
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function LoginPage() {
-    const { login } = useAuth();
+    const { login, loggedIn } = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [error, setError] = useState(null);
+
+useEffect(() => {
+        if (loggedIn) {
+            navigate('/');
+        }
+    }, [loggedIn, navigate]);
 
 
    const onFormChange = (e) => {

@@ -1,47 +1,56 @@
 import { SongContext } from "../contexts/SongContext";
-import { useAuth } from "../hooks/useAuth";
 import { useState, useEffect, useMemo } from "react"; 
 
 export function SongProvider({ children }) {
-  const { user } = useAuth();
-  const [userInfo, setUserInfo] = useState(null);
   const [genres, setGenres] = useState([]);
+  const [statuses, setStatuses] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
 
   const API_URL = "http://localhost:5555";
 
   useEffect(() => {
-    if (user) {
-      fetchUserInfo();
-    }
-  }, [user]);
+    fetchGenres();
+    fetchStatuses();
+  }, []);
 
-  const fetchUserInfo = async () => {
+  const fetchGenres = async () => {
     try {
-      const response = await fetch(`${API_URL}/check_session`);
+      const response = await fetch(`${API_URL}/genres`);
       if (response.ok) {
         const data = await response.json();
-        setUserInfo(data);
+        setGenres(data);
       }
     } catch (error) {
-      console.error("Error fetching user info:", error);
+      console.error("Error fetching genres:", error);
+    }
+  }
+  
+  const fetchStatuses = async () => { 
+    try {
+      const response = await fetch(`${API_URL}/statuses`);
+      if (response.ok) {
+        const data = await response.json();
+        setStatuses(data);
+      }
+    } catch (error) {
+      console.error("Error fetching statuses:", error);
     }
   }
 
+
+
   const value = useMemo(() => ({ 
-        userInfo,
         genres,
-        setGenres,
+        statuses,
         selectedSong,
-        setSelectedSong
+        setSelectedSong,
+
     }), 
-    [genres, selectedSong]);
+    [genres, statuses, selectedSong]);
 
   return (
-    <>
     <SongContext.Provider value={value}>
       {children}
     </SongContext.Provider>
-    </>
   )
 }
