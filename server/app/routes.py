@@ -81,6 +81,16 @@ def get_song(id):
     song = Song.query.get_or_404(id)
     return jsonify(song_schema.dump(song))
 
+@bp.route('/songs/<int:id>', methods=['DELETE'])
+def delete_song(id):
+    song = db.session.get(Song, id)
+    if not song:
+        return jsonify({"error": "Song not found"}), 404
+    
+    db.session.delete(song)
+    db.session.commit()
+    return jsonify({"message": "Song deleted"}), 200
+
 
 @bp.route('/genres', methods=['GET'])
 def get_genres():

@@ -17,24 +17,24 @@ export function AuthProvider({ children }) {
 
 const checkSession = async () => {
     try {
-        const response = await fetch(`${API_URL}/check_session`);
+        const response = await fetch(`${API_URL}/check_session`, {
+            credentials: 'include'
+        });
         if (response.ok) {
             const userData = await response.json();
             
             if (userData.logged_in) {
-                // Only set the user state if 'logged_in' is true
                 setUser(userData.user); 
             } else {
-                // If 'logged_in' is false, ensure 'user' is null
                 setUser(null); 
             }
         }
-          } catch (error) {
-            console.error("Error checking session:", error);
-        } finally {
-            setLoading(false);  // Add this
-        }
+    } catch (error) {
+        console.error("Error checking session:", error);
+    } finally {
+        setLoading(false);
     }
+}
     
 async function login(credentials) {
   try {
@@ -78,7 +78,6 @@ const logout = async () => {
         logout,
         user,
         setUser,
-        loading,
         inEditMode, 
         setInEditMode
     }), 
