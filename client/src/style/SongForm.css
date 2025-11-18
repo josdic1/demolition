@@ -1,0 +1,90 @@
+.song-form-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 3rem 1rem;
+  font-family: 'Courier New', monospace;
+}
+
+.song-form-card {
+  background: white;
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 620px;
+  border: 1px solid #eee;
+}
+
+.song-form-card h2 {
+  text-align: center;
+  margin: 0 0 2.5rem 0;
+  font-size: 2.1rem;
+  color: #222;
+  font-weight: bold;
+}
+
+.song-form-card label {
+  display: block;
+  margin-bottom: 1.6rem;
+}
+
+.song-form-card label span {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.song-form-card input,
+.song-form-card textarea,
+.song-form-card select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fdfdfd;
+  transition: all 0.2s;
+}
+
+.song-form-card input:focus,
+.song-form-card textarea:focus,
+.song-form-card select:focus {
+  outline: none;
+  border-color: #007bff;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.6rem;
+}
+
+.song-form-card button {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1.1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.song-form-card button:hover {
+  background: #0056b3;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+}

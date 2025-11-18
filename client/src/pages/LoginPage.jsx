@@ -1,6 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import '../style/LoginPage.css';
 
 export function LoginPage() {
     const { login, loggedIn } = useAuth();
@@ -37,15 +38,34 @@ useEffect(() => {
             setError(result.error);
         }
     };
-    return (
-        <div>
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit}>
-                {error && <div style={{ color: 'red' }}>{error}</div>}
-                <input name="email" type="email" onChange={onFormChange} value={formData.email} placeholder="Email" required />
-                <input name="password" type="password" onChange={onFormChange} value={formData.password} placeholder="Password" required />
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    );
+   return (
+  <div className="login-page-container">
+    <div className="login-card">
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit}>
+        {error && <div className="login-error">{error}</div>}
+        
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={onFormChange}
+          required
+        />
+        
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={onFormChange}
+          required
+        />
+        
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+);
 }

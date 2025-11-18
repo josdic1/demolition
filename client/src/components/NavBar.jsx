@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.jsx";
-import './NavBar.css';
+import '../style/NavBar.css';
 
 export function NavBar() {
     const { loggedIn, logout } = useAuth();
@@ -14,7 +14,7 @@ export function NavBar() {
       ) : (
         <nav>
           <NavLink to="/">Home</NavLink>
-          <NavLink to="/songs/new">Add Song</NavLink>
+          <NavLink to="/songs">Add Song</NavLink>
           <NavLink to="http://localhost:5555/command">Command</NavLink>
           <NavLink to="/songs">Songs</NavLink>
           <button type='button' onClick={logout}>Logout</button> 

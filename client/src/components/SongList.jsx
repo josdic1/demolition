@@ -1,5 +1,5 @@
 import { SongItem } from "./SongItem";
-import './SongList.css';
+import '../style/SongList.css';
 
 export function SongList({ songs, deleteSong }) {
     if (!songs || songs.length === 0) {

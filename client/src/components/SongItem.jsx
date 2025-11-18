@@ -1,9 +1,17 @@
+import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import './SongItem.css';
+import '../style/SongItem.css';
+
 
 export function SongItem({ song, deleteSong }) {
+    const { setInEditMode } = useAuth();
     const navigate = useNavigate();
 
+
+    function onEditClick() {
+        setInEditMode(true);
+        navigate(`/songs/${song.id}/edit`)
+    } 
     async function handleDeleteSong() {
         if (!confirm(`Delete "${song.title}"?`)) return;
         
@@ -35,7 +43,7 @@ export function SongItem({ song, deleteSong }) {
                 })}
             </td>
             <td className="song-item-actions"><button onClick={() => navigate(`/songs/${song.id}`)}>View</button></td>
-            <td className="song-item-actions"><button onClick={() => navigate(`/songs/${song.id}/edit`)}>Edit</button></td>
+            <td className="song-item-actions"><button onClick={onEditClick}>Edit</button></td>
             <td className="song-item-actions"><button onClick={handleDeleteSong}>Delete</button></td>
         </tr>
     )

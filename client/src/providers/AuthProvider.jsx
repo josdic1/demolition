@@ -75,6 +75,47 @@ export function AuthProvider({ children }) {
         }
     };
 
+    //================= Create Song =================//
+    const createSong = async (songData) => {
+        try {
+            const response = await fetch(`${API_URL}/songs`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(songData)
+            });
+            if (!response.ok) throw new Error('Failed to create song');
+            const newSong = await response.json();
+            setUserSongs([...userSongs, newSong]);
+            return newSong;
+        } catch (error) {
+            console.error("Error creating song:", error);
+            throw error;
+        }       
+    }
+
+
+        //================= Update Song =================//
+    const updateSong = async (id, songData) => {
+        try {
+            const response = await fetch(`${API_URL}/songs/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(songData)
+            });
+            if (!response.ok) throw new Error('Failed to update song');
+            const updatedSong = await response.json();
+            const updatedSongs = userSongs.map((song) =>
+                song.id === updatedSong.id ? updatedSong : song
+            );
+            setUserSongs(updatedSongs);
+            return updatedSong;
+        } catch (error) {
+            console.error("Error updating song:", error);
+            throw error;
+        }
+    }
 
       //================= Delete Song =================//
   const deleteSong = async (id) => {
@@ -102,6 +143,8 @@ export function AuthProvider({ children }) {
         userInfo,
         userSongs,
         setUserSongs,
+        createSong,
+        updateSong,
         deleteSong, 
         inEditMode, 
         setInEditMode

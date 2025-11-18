@@ -3,7 +3,7 @@ import { useSong } from '../hooks/useSong.jsx';
 import { useState } from 'react';
 import { StateBar } from '../components/StateBar.jsx';
 import { SongList } from '../components/SongList.jsx';
-import './HomePage.css';
+import '../style/HomePage.css';
 
 export function HomePage() {
   const { userInfo, userSongs, loading, loggedIn, inEditMode, deleteSong } = useAuth();

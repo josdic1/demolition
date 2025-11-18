@@ -1,18 +1,16 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.jsx';
-import './SongCard.css';
+import '../style/SongCard.css';
 
-export function SongCard({ onEdit, onDelete }) {
-  const { userSongs } = useAuth();
+export function SongCard() {
+  const { userSongs, deleteSong } = useAuth();
   const { id } = useParams();
     const navigate = useNavigate();
 
   const song = userSongs.find((s) => s.id === Number(id));
-  console.log(song.links)
+
   if (!song) return <div>Song not found</div>;
 
-  const handleEdit = () => onEdit(song.id);
-  const handleDelete = () => onDelete(song.id);
 
 return (
   <div className="song-card">
@@ -49,8 +47,8 @@ return (
 
     {/* Edit / Delete Buttons */}
     <div className="song-card-buttons">
-      <button onClick={handleEdit}>Edit</button>
-      <button onClick={handleDelete}>Delete</button>
+      <button onClick={() => navigate(`/songs/${song.id}/edit`)}>Edit</button>
+      <button onClick={() => deleteSong(song.id)}>Delete</button>
     </div>
   </div>
 );

@@ -4,6 +4,7 @@ import { HomePage } from './pages/HomePage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { SongCard } from './pages/SongCard.jsx';
+import { SongForm } from './components/SongForm.jsx';
 
 export const routes = [
     {
@@ -26,6 +27,18 @@ export const routes = [
                 element: 
                     <ProtectedRoute>
                         <SongCard />
+                    </ProtectedRoute>,
+            }, {
+                path: 'songs',
+                element: 
+                    <ProtectedRoute>
+                        <SongForm />
+                    </ProtectedRoute>,
+            },, {
+                path: 'songs/:id/edit',
+                element: 
+                    <ProtectedRoute>
+                        <SongForm />
                     </ProtectedRoute>,
             }
         ],
