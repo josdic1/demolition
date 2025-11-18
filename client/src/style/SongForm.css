@@ -68,12 +68,15 @@
   margin-bottom: 1.6rem;
 }
 
-.song-form-card button {
-  width: 100%;
+.form-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
   margin-top: 2rem;
+}
+
+.song-form-card button {
   padding: 1.1rem;
-  background: #007bff;
-  color: white;
   border: none;
   border-radius: 8px;
   font-family: 'Courier New', monospace;
@@ -83,8 +86,24 @@
   transition: all 0.25s;
 }
 
-.song-form-card button:hover {
+.song-form-card button[type="submit"] {
+  background: #007bff;
+  color: white;
+}
+
+.song-form-card button[type="submit"]:hover {
   background: #0056b3;
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+}
+
+.cancel-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #5a6268;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
 }

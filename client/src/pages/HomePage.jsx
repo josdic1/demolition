@@ -8,7 +8,7 @@ import '../style/HomePage.css';
 export function HomePage() {
   const { userInfo, userSongs, loading, loggedIn, inEditMode, deleteSong } = useAuth();
   const { genres, statuses, selectedSong } = useSong();
-  const [showStateBar, setShowStateBar] = useState(true);
+  const [showStateBar, setShowStateBar] = useState(false);
   const [showSongList, setShowSongList] = useState(true);
 
   return (

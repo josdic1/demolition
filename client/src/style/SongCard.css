@@ -112,3 +112,21 @@
   font-style: italic;
   font-size: 0.9rem;
 }
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  display: inline-block;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}

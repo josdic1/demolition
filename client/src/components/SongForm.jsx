@@ -66,6 +66,15 @@ export function SongForm() {
         navigate('/');
     };
 
+    const handleCancel = () => {
+        if (inEditMode) {
+            setInEditMode(false);
+            navigate(`/songs/${id}`);
+        } else {
+            navigate('/');
+        }
+    };
+
     return (
         <div className="song-form-page">
             <div className="song-form-card">
@@ -158,9 +167,14 @@ export function SongForm() {
                         </select>
                     </label>
 
-                    <button type="submit">
-                        {inEditMode ? 'Update Song' : 'Create Song'}
-                    </button>
+                    <div className="form-buttons">
+                        <button type="button" onClick={handleCancel} className="cancel-btn">
+                            Cancel
+                        </button>
+                        <button type="submit">
+                            {inEditMode ? 'Update Song' : 'Create Song'}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
