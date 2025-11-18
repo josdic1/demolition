@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
                 const userData = await response.json();
                 
                 if (userData.logged_in) {
-                    const { songs, ...info } = userData.user;
+                    const { songs, ...info } = userData.user; // { destructure user object }
                     setUserInfo(info);  // { id, name, email }
                     setUserSongs(songs || []);  // songs array
                 } else {

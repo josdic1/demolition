@@ -1,12 +1,13 @@
 import { useAuth } from "../hooks/useAuth";
-import { useSong } from "../hooks/useSong";
+// import { useSong } from "../hooks/useSong";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { GENRE_OPTIONS, KEY_OPTIONS, STATUS_OPTIONS } from "../static/options";
 import '../style/SongForm.css';
 
 export function SongForm() {
     const { userInfo, userSongs, inEditMode, setInEditMode, createSong, updateSong } = useAuth();
-    const { genres, statuses } = useSong();
+    // const { genres, statuses } = useSong();
     const [originalSong, setOriginalSong] = useState(null);
     const { id } = useParams();
     const navigate = useNavigate();
@@ -41,6 +42,8 @@ export function SongForm() {
         }
     }, [inEditMode, id, userSongs]);
 
+
+
     const buildPayload = () => ({
         title: formData.title.trim(),
         artist: formData.artist.trim(),
@@ -62,16 +65,31 @@ export function SongForm() {
     const handleUpdate = async (e) => {
         e.preventDefault();
         await updateSong(originalSong.id, buildPayload());
+        navigate(`/`);
         setInEditMode(false);
-        navigate('/');
+        onClear()
     };
 
     const handleCancel = () => {
-        if (inEditMode) {
-            setInEditMode(false);
             navigate(`/`);
+            setInEditMode(false);
+            onClear()
+        }
+    
 
-    }}
+    const onClear = () => {
+        setFormData({
+            title: '',
+            artist: '',
+            about: '',
+            bpm: '',
+            key: '',
+            lyrics: '',
+            genre_id: '',
+            status_id: '',
+            links: []
+        });
+    }
 
     return (
         <div className="song-form-page">
@@ -120,11 +138,19 @@ export function SongForm() {
 
                         <label>
                             <span>Key</span>
-                            <input
-                                type="text"
+                            <select
                                 value={formData.key}
                                 onChange={e => setFormData({ ...formData, key: e.target.value })}
-                            />
+                            >
+                                <option value="" disabled>
+                                    Choose key...
+                                </option>
+                                {KEY_OPTIONS.map(option => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
                         </label>
                     </div>
 
@@ -142,11 +168,14 @@ export function SongForm() {
                         <select
                             value={formData.genre_id}
                             onChange={e => setFormData({ ...formData, genre_id: e.target.value })}
-                            required
                         >
-                            <option value="">Select Genre</option>
-                            {genres.map(g => (
-                                <option key={g.id} value={g.id}>{g.name}</option>
+                            <option value="" disabled>
+                                Choose genre...
+                            </option>
+                            {GENRE_OPTIONS.map(option => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
                             ))}
                         </select>
                     </label>
@@ -154,13 +183,13 @@ export function SongForm() {
                     <label>
                         <span>Status</span>
                         <select
-                            value={formData.status_id}
+                            value={formData.status_id || "Idea"}
                             onChange={e => setFormData({ ...formData, status_id: e.target.value })}
-                            required
                         >
-                            <option value="">Select Status</option>
-                            {statuses.map(s => (
-                                <option key={s.id} value={s.id}>{s.name}</option>
+                            {STATUS_OPTIONS.map(option => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
                             ))}
                         </select>
                     </label>
