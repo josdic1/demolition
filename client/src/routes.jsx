@@ -1,6 +1,7 @@
 import { App } from './App.jsx';
 import { ErrorPage } from './pages/ErrorPage.jsx';
 import { HomePage } from './pages/HomePage.jsx';
+import { LinkForm } from './components/LinkForm.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { SongCard } from './pages/SongCard.jsx';
@@ -34,11 +35,17 @@ export const routes = [
                     <ProtectedRoute>
                         <SongForm />
                     </ProtectedRoute>,
-            },, {
+            }, {
                 path: 'songs/:id/edit',
                 element: 
                     <ProtectedRoute>
                         <SongForm />
+                    </ProtectedRoute>,
+            }, {
+                path: 'links',
+                element: 
+                    <ProtectedRoute>
+                        <LinkForm />
                     </ProtectedRoute>,
             }
         ],

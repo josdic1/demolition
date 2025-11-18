@@ -1,14 +1,16 @@
 import { useAuth } from "../hooks/useAuth";
-// import { useSong } from "../hooks/useSong";
+import { useSong } from "../hooks/useSong";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { GENRE_OPTIONS, KEY_OPTIONS, STATUS_OPTIONS } from "../static/options";
+import { GENRE_OPTIONS, STATUS_OPTIONS } from "../static/options";
+import { LinkForm } from "./LinkForm";
 import '../style/SongForm.css';
 
 export function SongForm() {
     const { userInfo, userSongs, inEditMode, setInEditMode, createSong, updateSong } = useAuth();
-    // const { genres, statuses } = useSong();
+    const { linkTypes, fetchLinkTypes, songKeys } = useSong();
     const [originalSong, setOriginalSong] = useState(null);
+    const [showLinkForm, setShowLinkForm] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -145,9 +147,9 @@ export function SongForm() {
                                 <option value="" disabled>
                                     Choose key...
                                 </option>
-                                {KEY_OPTIONS.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
+                                {songKeys.map(key => (
+                                    <option key={key} value={key}>
+                                        {key}
                                     </option>
                                 ))}
                             </select>
@@ -193,6 +195,12 @@ export function SongForm() {
                             ))}
                         </select>
                     </label>
+
+                    <label>
+                        <span>Links</span>
+                        <button type="button" onClick={() => setShowLinkForm(!showLinkForm)}> Add Link</button>
+                    </label>
+                    {showLinkForm && <LinkForm linkTypes={linkTypes} fetchLinkTypes={fetchLinkTypes}/> }
 
                     <div className="form-buttons">
                         <button type="button" onClick={handleCancel} className="cancel-btn">

@@ -4,7 +4,7 @@ from app.models import user_schema, song_schema, genre_schema, status_schema, li
 from app.models import users_schema, songs_schema, genres_schema, statuses_schema, links_schema
 from app.extensions import db, bcrypt
 from marshmallow import ValidationError
-
+from app.constants import LINK_TYPES, KEY_OPTIONS
 bp = Blueprint('main', __name__, url_prefix='')
 
 # -------------------------------------------------
@@ -83,6 +83,11 @@ def get_song(id):
     if not song:
         return jsonify({"error": "Song not found"}), 404
     return jsonify(song_schema.dump(song))
+
+# === Get Song Keys ===
+@bp.route('/song-keys', methods=['GET'])
+def get_song_keys():
+    return jsonify(KEY_OPTIONS)
 
 # === Create Song ===
 @bp.route('/songs', methods=['POST'])
@@ -238,6 +243,11 @@ def delete_status(id):
 
 
 # ------------------------------------------------- LINK ROUTES -------------------------------------------------
+# === Get Link Types ===
+@bp.route('/link-types', methods=['GET'])
+def get_link_types():
+    return jsonify(LINK_TYPES)
+
 # === Get Links ===
 @bp.route('/links', methods=['GET'])
 def get_links():
@@ -260,10 +270,11 @@ def create_link_for_song(song_id):
         return jsonify({"error": "Song not found"}), 404
     
     data = request.get_json()
+    data['song_id'] = song_id  # Explicitly set song_id
     
     try:
-        link = link_schema.load(data)        # no song_id in payload
-        song.links.append(link)              # SQLAlchemy sets song_id automatically
+        link = link_schema.load(data)
+        db.session.add(link)  # Just add directly
         db.session.commit()
         return jsonify(link_schema.dump(link)), 201
     except ValidationError as err:

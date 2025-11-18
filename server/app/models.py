@@ -1,5 +1,6 @@
 from .extensions import db, ma, bcrypt
 
+
 # -------------------------------------------------
 # Model
 # -------------------------------------------------
@@ -135,17 +136,17 @@ class LinkSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Link
         load_instance = True
-        exclude = ['song_id']  # Don't need FK
     
     id = ma.auto_field(dump_only=True)
     url_type = ma.auto_field()
     url_link = ma.auto_field()
+    song_id = ma.auto_field()
 
 class SongSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Song
         load_instance = True
-        # DON'T exclude the _id fields anymore
+        # Don't put field definitions here!
     
     id = ma.auto_field(dump_only=True)
     title = ma.auto_field()

@@ -1,16 +1,20 @@
 import { SongContext } from "../contexts/SongContext";
-import { useState, useEffect, useMemo } from "react"; 
+import { useState, useEffect, useMemo, useCallback } from "react"; 
 
 export function SongProvider({ children }) {
   const [genres, setGenres] = useState([]);
   const [statuses, setStatuses] = useState([]);
+  const [songKeys, setSongKeys] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
+  const [linkTypes, setLinkTypes] = useState([]);
 
   const API_URL = "http://localhost:5555";
 
   useEffect(() => {
     fetchGenres();
     fetchStatuses();
+    fetchKeys();
+    fetchLinkTypes();
   }, []);
 
   const fetchGenres = async () => {
@@ -37,16 +41,41 @@ export function SongProvider({ children }) {
     }
   }
 
+    const fetchKeys = async () => {
+    try {
+      const response = await fetch(`${API_URL}/song-keys`);
+      if (response.ok) {
+        const data = await response.json();
+        setSongKeys(data);
+      }
+    } catch (error) {
+      console.error("Error fetching keys:", error);
+    }
+  }
+
+const fetchLinkTypes = async () => {
+    try {
+      const response = await fetch(`${API_URL}/link-types`);
+      if (response.ok) {
+        const data = await response.json();
+        setLinkTypes(data);
+      }
+    } catch (error) {
+      console.error("Error fetching link types:", error);
+    }
+  }
 
 
   const value = useMemo(() => ({ 
         genres,
+        linkTypes,
         statuses,
+        songKeys,
         selectedSong,
         setSelectedSong,
 
     }), 
-    [genres, statuses, selectedSong]);
+    [genres, statuses, selectedSong, linkTypes]);
 
   return (
     <SongContext.Provider value={value}>
