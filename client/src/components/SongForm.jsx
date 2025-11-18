@@ -69,11 +69,9 @@ export function SongForm() {
     const handleCancel = () => {
         if (inEditMode) {
             setInEditMode(false);
-            navigate(`/songs/${id}`);
-        } else {
-            navigate('/');
-        }
-    };
+            navigate(`/`);
+
+    }}
 
     return (
         <div className="song-form-page">

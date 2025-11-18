@@ -1,0 +1,66 @@
+css/* UserGenreButtons.css & UserStatusButtons.css */
+
+.user-genre-buttons,
+.user-status-buttons {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-genre-buttons {
+    border-left: 4px solid #007bff;
+}
+
+.user-status-buttons {
+    border-left: 4px solid #28a745;
+}
+
+.genre-button,
+.status-button {
+    padding: 0.6rem 1.2rem;
+    margin: 0.3rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    color: #333;
+    font-family: monospace;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.genre-button:hover {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.status-button:hover {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.genre-button:active,
+.status-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* No songs message */
+.user-genre-buttons p,
+.user-status-buttons p {
+    padding: 1rem;
+    margin: 0;
+    text-align: center;
+    font-family: monospace;
+    color: #666;
+    font-style: italic;
+}

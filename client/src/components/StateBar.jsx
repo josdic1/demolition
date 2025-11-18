@@ -1,7 +1,7 @@
 
 import '../style/StateBar.css';
 
-export function StateBar({ userInfo, userSongs,loading, loggedIn, inEditMode, genres, statuses, selectedSong }) {
+export function StateBar({ userInfo, userSongs,loading, loggedIn, inEditMode, genres, statuses, selectedSong, buttonValue, searchValue, sortOrder }) {
 
   return (
     <div className="statebar-container">
@@ -18,6 +18,9 @@ export function StateBar({ userInfo, userSongs,loading, loggedIn, inEditMode, ge
                     <th>Statuses</th>
                     <th>Links</th>
                     <th>Selected</th>
+                    <th className="section-header"> SEARCH FILTERS </th>
+                    <th>Button Value</th>
+                    <th>Search Value</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,6 +45,9 @@ export function StateBar({ userInfo, userSongs,loading, loggedIn, inEditMode, ge
                     <td>{statuses?.length || 0}</td>
                     <td>{userSongs.links?.length || 0}</td> 
                     <td>{selectedSong?.title || '—'}</td>
+                      <td className="section-divider">{sortOrder || '—'}</td>
+                        <td>{buttonValue?.name || '—'}</td>
+                        <td>{searchValue || '—'}</td> 
                 </tr>
             </tbody>
         </table>
