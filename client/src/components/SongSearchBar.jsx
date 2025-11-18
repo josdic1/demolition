@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import '../style/SongSearchBar.css';
+
+import '../style/UserButtons.css';
 
 export function SongSearchBar({ searchValue, onSearch }) {
 

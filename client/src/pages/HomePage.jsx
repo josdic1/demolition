@@ -11,11 +11,10 @@ import '../style/HomePage.css';
 export function HomePage() {
   const { userInfo, userSongs, loading, deleteSong, loggedIn } = useAuth();
   const { genres, statuses, selectedSong } = useSong();
-  const [showStateBar, setShowStateBar] = useState(true);
+  const [showStateBar, setShowStateBar] = useState(false);
   const [buttonValue, setButtonValue] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const [sortOrder, setSortOrder] = useState('');
-
 
   // Clean unique extraction using Map
   const uniqueGenres = useMemo(() => {
@@ -36,36 +35,33 @@ export function HomePage() {
     return [...map.values()];
   }, [userSongs]);
 
-
-
-const finalSongs = useMemo(() => {
-  let result = userSongs || [];
-  
-  // Step 1: Button filter
-  if (buttonValue) {
-    result = result.filter(s => 
-      s.genre?.id === buttonValue.id || s.status?.id === buttonValue.id
-    );
-  }
-  
-  // Step 2: Search filter
-  if (searchValue) {
-    result = result.filter(s =>
-      s.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
-      s.artist?.toLowerCase().includes(searchValue.toLowerCase())
-    );
-  }
-  
-  // Step 3: Sort
-  if (sortOrder === 'asc') {
-    result.sort((a, b) => a.title.localeCompare(b.title));
-  } else if (sortOrder === 'desc') {
-    result.sort((a, b) => b.title.localeCompare(a.title));
-  }
-  
-  return result;    
-}, [userSongs, buttonValue, searchValue, sortOrder]);
-
+  const finalSongs = useMemo(() => {
+    let result = userSongs || [];
+    
+    // Step 1: Button filter
+    if (buttonValue) {
+      result = result.filter(s => 
+        s.genre?.id === buttonValue.id || s.status?.id === buttonValue.id
+      );
+    }
+    
+    // Step 2: Search filter
+    if (searchValue) {
+      result = result.filter(s =>
+        s.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
+        s.artist?.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+    
+    // Step 3: Sort
+    if (sortOrder === 'asc') {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortOrder === 'desc') {
+      result.sort((a, b) => b.title.localeCompare(a.title));
+    }
+    
+    return result;    
+  }, [userSongs, buttonValue, searchValue, sortOrder]);
 
   return (
     <div className="homepage-container">
@@ -74,7 +70,6 @@ const finalSongs = useMemo(() => {
         <button className="toggle-button" onClick={() => setShowStateBar(v => !v)}>
           {showStateBar ? 'Hide' : 'Show'} State Bar
         </button>
-   
       </div>
 
       {showStateBar && (
@@ -89,15 +84,7 @@ const finalSongs = useMemo(() => {
           buttonValue={buttonValue}
           searchValue={searchValue}
           sortOrder={sortOrder}
-          
         />
-      )}
-
-      {buttonValue && (
-        <div className="active-filter">
-          Filtering by: <strong>{buttonValue.name}</strong>
-          <button onClick={() => setButtonValue(null)}>✕</button>
-        </div>
       )}
 
       <UserGenreButtons 
@@ -113,26 +100,33 @@ const finalSongs = useMemo(() => {
       />
 
       {buttonValue && (
-  <>
-    <SongSearchBar 
-      searchValue={searchValue}
-      onSearch={setSearchValue}
-    />
-    
-    <button onClick={() => {
-      if (sortOrder === '') setSortOrder('asc');
-      else if (sortOrder === 'asc') setSortOrder('desc');
-      else setSortOrder('');
-    }}>
-      Sort: {sortOrder === 'asc' ? '↑ A-Z' : sortOrder === 'desc' ? '↓ Z-A' : '—'}
-    </button>
-  </>
-)}
-      
-  {buttonValue && (
-  <SongList songs={finalSongs} deleteSong={deleteSong} />
-)}
-   
+        <>
+          <div className="active-filter">
+            Filtering by: <strong>{buttonValue.name}</strong>
+            <button onClick={() => setButtonValue(null)}>✕</button>
+          </div>
+
+          <div className="song-search-bar">
+            <SongSearchBar 
+              searchValue={searchValue}
+              onSearch={setSearchValue}
+            />
+          </div>
+          
+          <button 
+            className="sort-button"
+            onClick={() => {
+              if (sortOrder === '') setSortOrder('asc');
+              else if (sortOrder === 'asc') setSortOrder('desc');
+              else setSortOrder('');
+            }}
+          >
+            Sort: {sortOrder === 'asc' ? '↑ A-Z' : sortOrder === 'desc' ? '↓ Z-A' : '—'}
+          </button>
+
+          <SongList songs={finalSongs} deleteSong={deleteSong} />
+        </>
+      )}
     </div>
   );
 }

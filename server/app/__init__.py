@@ -1,5 +1,5 @@
 from flask import Flask
-from app.extensions import db, migrate, bcrypt, cors
+from app.extensions import db, migrate, bcrypt, cors, ma
 from app.config import Config
 
 def create_app():
@@ -10,6 +10,8 @@ def create_app():
     migrate.init_app(app, db)
     bcrypt.init_app(app)
     cors.init_app(app, supports_credentials=True)
+    # Initialize Marshmallow for schema support
+    ma.init_app(app)
 
     # Register blueprints
     from app.routes import bp

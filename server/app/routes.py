@@ -79,7 +79,9 @@ def get_songs():
 # === Get Song by ID ===
 @bp.route('/songs/<int:id>', methods=['GET'])
 def get_song(id):
-    song = db.session.get_or_404(Song, id)
+    song = db.session.get(Song, id)
+    if not song:
+        return jsonify({"error": "Song not found"}), 404
     return jsonify(song_schema.dump(song))
 
 # === Create Song ===
@@ -133,7 +135,9 @@ def get_genres():
 # === Get Genre by ID ===
 @bp.route('/genres/<int:id>', methods=['GET'])
 def get_genre(id):
-    genre = db.session.get_or_404(Genre, id)
+    genre = db.session.get(Genre, id)
+    if not genre:
+        return jsonify({"error": "Genre not found"}), 404
     return jsonify(genre_schema.dump(genre))
 
 # === Create Genre ===
@@ -187,7 +191,9 @@ def get_statuses():
 # === Get Status by ID ===
 @bp.route('/statuses/<int:id>', methods=['GET'])
 def get_status(id):
-    status = db.session.get_or_404(Status, id)
+    status = db.session.get(Status, id)
+    if not status:
+        return jsonify({"error": "Status not found"}), 404
     return jsonify(status_schema.dump(status))
 
 # === Create Status ===
@@ -241,7 +247,9 @@ def get_links():
 # === Get Link by ID ===
 @bp.route('/links/<int:id>', methods=['GET'])
 def get_link(id):
-    link = db.session.get_or_404(Link, id)
+    link = db.session.get(Link, id)
+    if not link:
+        return jsonify({"error": "Link not found"}), 404
     return jsonify(link_schema.dump(link))
 
 # === Create Link  ===
