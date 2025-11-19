@@ -85,7 +85,7 @@ class Song(db.Model):
 
     updated_at = db.Column(
         db.DateTime,
-        server_default=db.func.now(),
+        default=db.func.now(),
         onupdate=db.func.now(),
         nullable=False
     )
