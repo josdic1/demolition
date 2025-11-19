@@ -7,8 +7,8 @@ import { LinkForm } from "./LinkForm";
 import '../style/SongForm.css';
 
 export function SongForm() {
-    const { userInfo, userSongs, inEditMode, setInEditMode, createSong, updateSong } = useAuth();
-    const { linkTypes, songKeys, createLink } = useSong();
+    const { userInfo, userSongs, inEditMode, setInEditMode, createSong, updateSong, createLink } = useAuth();
+    const { linkTypes, songKeys, fetchFormData } = useSong();
     const [originalSong, setOriginalSong] = useState(null);
     const [showLinkForm, setShowLinkForm] = useState(false);
     const [newLinks, setNewLinks] = useState([]); 
@@ -28,6 +28,10 @@ export function SongForm() {
         setInEditMode(true);
     }
 }, [id, setInEditMode]);
+
+  useEffect(() => {
+    fetchFormData();
+  }, []);
 
     useEffect(() => {
         if (inEditMode && id) {
@@ -183,7 +187,7 @@ export function SongForm() {
                             <option value="" disabled>
                                 Choose genre...
                             </option>
-                            {GENRE_OPTIONS.map(option => (
+                            {GENRE_OPTIONS.sort((a, b) => a.label.localeCompare(b.label)).map(option => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
@@ -213,25 +217,29 @@ export function SongForm() {
                     </label>
 
                     {/* ✅ Show existing links in edit mode */}
-                    {inEditMode && originalSong?.links?.length > 0 && (
-                        <div className="existing-links">
-                            <strong>Existing Links:</strong>
-                            {originalSong.links.map(link => (
-                                <div key={link.id}>
-                                    {link.url_type}: {link.url_link}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                  {inEditMode && originalSong?.links?.length > 0 && (
+    <div className="existing-links">
+        <strong>Existing Links:</strong>
+        {[...originalSong.links]
+            .sort((a, b) => a.url_type.localeCompare(b.url_type)) // Sort by Type
+            .map(link => (
+                <div key={link.id}>
+                    {link.url_type}: {link.url_link}
+                </div>
+        ))}
+    </div>
+)}
 
                     
 
                     {/* ✅ Show new unsaved links */}
-                    {newLinks.length > 0 && (
-                        <div className="new-links">
-                            <strong>New Links (unsaved):</strong>
-                            {newLinks.map((link, i) => (
-                                <div key={i}>
+                   {newLinks.length > 0 && (
+    <div className="new-links">
+        <strong>New Links (unsaved):</strong>
+        {[...newLinks]
+            .sort((a, b) => a.url_type.localeCompare(b.url_type)) // Sort by Type
+            .map((link, i) => (
+                <div key={i}>
                                     {link.url_type}: {link.url_link}
                                     <button 
                                         type="button" 
@@ -240,9 +248,9 @@ export function SongForm() {
                                         ✕
                                     </button>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+        ))}
+    </div>
+)}
 
                     {/* ✅ Updated LinkForm props */}
                     {showLinkForm && (

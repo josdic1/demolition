@@ -23,7 +23,8 @@ export function AuthProvider({ children }) {
                 const userData = await response.json();
                 
                 if (userData.logged_in) {
-                    const { songs, ...info } = userData.user; // { destructure user object }
+                    const { songs, ...info } = userData.user; // { destructure user object, 
+                    // ...info is leftovers, name is like info, extrasm etc === leftovers}
                     setUserInfo(info);  // { id, name, email }
                     setUserSongs(songs || []);  // songs array
                 } else {
@@ -92,13 +93,48 @@ export function AuthProvider({ children }) {
             console.error("Error creating song:", error);
             throw error;
         }       
+        
     }
+
+      // ================= Create Link ===================//
+const createLink = async (songId, linkData) => {
+    try {
+      const response = await fetch(`${API_URL}/songs/${songId}/links`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(linkData)
+      });
+      if (!response.ok) throw new Error('Failed to create link');
+      
+      const newLink = await response.json();
+
+      // 1. Map through existing songs to find the one matching songId
+      const updatedSongs = userSongs.map(song => {
+        if (song.id === songId) {
+          // 2. Return a copy of that song with the new link added to its array
+          return { ...song, links: [...song.links, newLink] };
+        }
+        // 3. Leave other songs alone
+        return song;
+      });
+
+      // 4. Update state
+      setUserSongs(updatedSongs);
+
+      return newLink;
+    } catch (error) {
+      console.error("Error creating link:", error);
+      throw error;
+    }
+  }
+
 
 
         //================= Update Song =================//
     const updateSong = async (id, songData) => {
         try {
-            console.log('Updating song:', id, songData);
+            
             const response = await fetch(`${API_URL}/songs/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -148,7 +184,8 @@ export function AuthProvider({ children }) {
         updateSong,
         deleteSong,
         inEditMode, 
-        setInEditMode
+        setInEditMode,
+        createLink
     }), 
     [userInfo, userSongs, loading, loggedIn, inEditMode]);
 

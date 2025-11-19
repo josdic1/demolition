@@ -86,10 +86,11 @@ class Song(db.Model):
     updated_at = db.Column(
         db.DateTime,
         server_default=db.func.now(),
-        server_onupdate=db.func.now(),
+        onupdate=db.func.now(),
         nullable=False
     )
-    
+
+   
     # Song belongs to user, genre, status
     user = db.relationship('User', back_populates='songs')
     genre = db.relationship('Genre', back_populates='songs')

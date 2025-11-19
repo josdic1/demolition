@@ -15,11 +15,12 @@ export function SongList({ songs, deleteSong }) {
                         <th>Artist</th>
                         <th>Genre</th>
                         <th>Status</th>
-                        <th>Created</th>
-                        <th>Updated</th>
+                        <th>Links</th>
                         <th>View</th>
                         <th>Edit</th>
                         <th>Delete</th>
+                        <th>Created</th>
+                        <th>Updated</th>
                     </tr>
                 </thead>
                 <tbody>

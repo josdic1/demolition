@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 
 export function LinkForm({ linkTypes = [], onAddLink }) {
     const [formData, setFormData] = useState({
@@ -12,12 +12,18 @@ export function LinkForm({ linkTypes = [], onAddLink }) {
     };
 
     const handleAddLink = () => {
+        // Prevent adding empty links if you want (Optional)
+        if (!formData.url_link && !formData.url_type) return;
+
         onAddLink({
             url_link: formData.url_link,
             url_type: formData.url_type
         });
         setFormData({ url_link: '', url_type: '' });
     };
+
+    // Check if user has started typing
+    const hasUnsavedInput = formData.url_link !== '' || formData.url_type !== '';
 
     return (
         <div className="link-form">
@@ -41,8 +47,13 @@ export function LinkForm({ linkTypes = [], onAddLink }) {
                 ))}
             </select>
 
-            <button type="button" onClick={handleAddLink}>
-                Add Link
+            <button 
+                type="button" 
+                onClick={handleAddLink}
+                // Optional: add a specific class style when it needs confirmation
+                style={{ backgroundColor: hasUnsavedInput ? '#e69e00' : undefined }}
+            >
+                {hasUnsavedInput ? 'Confirm Link' : 'Add Link'}
             </button>
         </div>
     );

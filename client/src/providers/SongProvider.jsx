@@ -10,96 +10,55 @@ export function SongProvider({ children }) {
 
   const API_URL = "http://localhost:5555";
 
-  useEffect(() => {
-    fetchGenres();
-    fetchStatuses();
-    fetchKeys();
-    fetchLinkTypes();
-  }, []);
 
   // ================= Fetch Data ===================//
-  const fetchGenres = async () => {
-    try {
-      const response = await fetch(`${API_URL}/genres`);
-      if (response.ok) {
-        const data = await response.json();
-        setGenres(data);
-      }
-    } catch (error) {
-      console.error("Error fetching genres:", error);
+  const fetchFormData = async () => {
+    // If already loaded, skip
+    if (genres.length > 0 && statuses.length > 0 && songKeys.length > 0 && linkTypes.length > 0) {
+      return;
     }
-  }
-  
-  const fetchStatuses = async () => { 
+    
     try {
-      const response = await fetch(`${API_URL}/statuses`);
-      if (response.ok) {
-        const data = await response.json();
-        setStatuses(data);
-      }
+      // Fetch all in parallel
+      const [genresRes, statusesRes, keysRes, linkTypesRes] = await Promise.all([
+        fetch(`${API_URL}/genres`),
+        fetch(`${API_URL}/statuses`),
+        fetch(`${API_URL}/song-keys`),
+        fetch(`${API_URL}/link-types`)
+      ]);
+      
+      const [genresData, statusesData, keysData, linkTypesData] = await Promise.all([
+        genresRes.json(),
+        statusesRes.json(),
+        keysRes.json(),
+        linkTypesRes.json()
+      ]);
+      
+      setGenres(genresData);
+      setStatuses(statusesData);
+      setSongKeys(keysData);
+      setLinkTypes(linkTypesData);
     } catch (error) {
-      console.error("Error fetching statuses:", error);
+      console.error("Error fetching form data:", error);
     }
-  }
+  };
 
-    const fetchKeys = async () => {
-    try {
-      const response = await fetch(`${API_URL}/song-keys`);
-      if (response.ok) {
-        const data = await response.json();
-        setSongKeys(data);
-      }
-    } catch (error) {
-      console.error("Error fetching keys:", error);
-    }
-  }
-
-const fetchLinkTypes = async () => {
-    try {
-      const response = await fetch(`${API_URL}/link-types`);
-      if (response.ok) {
-        const data = await response.json();
-        setLinkTypes(data);
-      }
-    } catch (error) {
-      console.error("Error fetching link types:", error);
-    }
-  }
-
-  // ================= Create Link ===================//
-  const createLink = async (songId, linkData) => {
-    try {
-      const response = await fetch(`${API_URL}/songs/${songId}/links`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(linkData)
-      });
-      if (!response.ok) throw new Error('Failed to create link');
-      const newLink = await response.json();
-      return newLink;
-    } catch (error) {
-      console.error("Error creating link:", error);
-      throw error;
-    }
-  }
 
 
   const value = useMemo(() => ({ 
-        genres,
-        linkTypes,
-        statuses,
-        songKeys,
-        selectedSong,
-        setSelectedSong,
-        createLink
-
-    }), 
-    [genres, statuses, selectedSong, linkTypes]);
+    genres,
+    linkTypes,
+    statuses,
+    songKeys,
+    selectedSong,
+    setSelectedSong,
+    fetchFormData  
+  }), 
+  [genres, statuses, selectedSong, linkTypes, songKeys]);
 
   return (
     <SongContext.Provider value={value}>
       {children}
     </SongContext.Provider>
-  )
+  );
 }
