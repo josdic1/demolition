@@ -17,7 +17,10 @@ def index():
 @bp.route('/check_session')
 def check_session():
     if 'user_id' in session:
-        user = User.query.get(session['user_id'])
+        user = db.session.query(User).options(
+            db.joinedload(User.songs).joinedload(Song.links)
+        ).filter_by(id=session['user_id']).first()
+        
         return jsonify({
             "logged_in": True,
             "user": user_schema.dump(user)
@@ -110,12 +113,14 @@ def update_song(id):
         return jsonify({"error": "Song not found"}), 404
     
     data = request.get_json()
+    print("Received data:", data)  # What does this show?
     
     try:
         updated_song = song_schema.load(data, instance=song, partial=True)
         db.session.commit()
         return jsonify(song_schema.dump(updated_song)), 200
     except ValidationError as err:
+        print("Validation error:", err.messages)  # What does this show?
         return jsonify({"errors": err.messages}), 400
 
 # === Delete Song ===

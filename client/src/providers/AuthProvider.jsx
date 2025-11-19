@@ -98,6 +98,7 @@ export function AuthProvider({ children }) {
         //================= Update Song =================//
     const updateSong = async (id, songData) => {
         try {
+            console.log('Updating song:', id, songData);
             const response = await fetch(`${API_URL}/songs/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -145,7 +146,7 @@ export function AuthProvider({ children }) {
         setUserSongs,
         createSong,
         updateSong,
-        deleteSong, 
+        deleteSong,
         inEditMode, 
         setInEditMode
     }), 

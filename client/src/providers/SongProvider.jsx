@@ -17,6 +17,7 @@ export function SongProvider({ children }) {
     fetchLinkTypes();
   }, []);
 
+  // ================= Fetch Data ===================//
   const fetchGenres = async () => {
     try {
       const response = await fetch(`${API_URL}/genres`);
@@ -65,6 +66,24 @@ const fetchLinkTypes = async () => {
     }
   }
 
+  // ================= Create Link ===================//
+  const createLink = async (songId, linkData) => {
+    try {
+      const response = await fetch(`${API_URL}/songs/${songId}/links`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(linkData)
+      });
+      if (!response.ok) throw new Error('Failed to create link');
+      const newLink = await response.json();
+      return newLink;
+    } catch (error) {
+      console.error("Error creating link:", error);
+      throw error;
+    }
+  }
+
 
   const value = useMemo(() => ({ 
         genres,
@@ -73,6 +92,7 @@ const fetchLinkTypes = async () => {
         songKeys,
         selectedSong,
         setSelectedSong,
+        createLink
 
     }), 
     [genres, statuses, selectedSong, linkTypes]);

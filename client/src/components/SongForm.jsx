@@ -8,22 +8,31 @@ import '../style/SongForm.css';
 
 export function SongForm() {
     const { userInfo, userSongs, inEditMode, setInEditMode, createSong, updateSong } = useAuth();
-    const { linkTypes, fetchLinkTypes, songKeys } = useSong();
+    const { linkTypes, songKeys, createLink } = useSong();
     const [originalSong, setOriginalSong] = useState(null);
     const [showLinkForm, setShowLinkForm] = useState(false);
+    const [newLinks, setNewLinks] = useState([]); 
     const { id } = useParams();
     const navigate = useNavigate();
 
     const initialFormData = {
         title: '', artist: '', about: '', bpm: '', key: '', lyrics: '',
-        genre_id: '', status_id: '', links: []
+        genre_id: '', status_id: 1  
     };
 
     const [formData, setFormData] = useState(initialFormData);
 
     useEffect(() => {
+
+    if (id) {
+        setInEditMode(true);
+    }
+}, [id, setInEditMode]);
+
+    useEffect(() => {
         if (inEditMode && id) {
             const song = userSongs.find(s => s.id === Number(id));
+            
             if (song) {
                 setOriginalSong(song);
                 setFormData({
@@ -34,17 +43,16 @@ export function SongForm() {
                     key: song.key || '',
                     lyrics: song.lyrics || '',
                     genre_id: song.genre?.id || '',
-                    status_id: song.status?.id || '',
-                    links: song.links || []
+                    status_id: song.status?.id || 1
                 });
+                setNewLinks([]);  // ✅ Add this
             }
         } else {
             setFormData(initialFormData);
             setOriginalSong(null);
+            setNewLinks([]);  // ✅ Add this
         }
     }, [inEditMode, id, userSongs]);
-
-
 
     const buildPayload = () => ({
         title: formData.title.trim(),
@@ -60,38 +68,39 @@ export function SongForm() {
 
     const handleCreate = async (e) => {
         e.preventDefault();
-        await createSong(buildPayload());
+        const newSong = await createSong(buildPayload());
+        
+        // ✅ Create links after song is created
+        await Promise.all(
+            newLinks.map(link => createLink(newSong.id, link))
+        );
+        
         navigate('/');
     };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
         await updateSong(originalSong.id, buildPayload());
-        navigate(`/`);
+        
+        // ✅ Create new links
+        await Promise.all(
+            newLinks.map(link => createLink(originalSong.id, link))
+        );
+        
+        navigate('/');
         setInEditMode(false);
-        onClear()
     };
 
     const handleCancel = () => {
-            navigate(`/`);
-            setInEditMode(false);
-            onClear()
-        }
-    
+        navigate('/');
+        setInEditMode(false);
+        setNewLinks([]);  // ✅ Add this
+    };
 
-    const onClear = () => {
-        setFormData({
-            title: '',
-            artist: '',
-            about: '',
-            bpm: '',
-            key: '',
-            lyrics: '',
-            genre_id: '',
-            status_id: '',
-            links: []
-        });
-    }
+    // ✅ Add this function
+    const handleAddLink = (link) => {
+        setNewLinks(prev => [...prev, link]);
+    };
 
     return (
         <div className="song-form-page">
@@ -169,7 +178,7 @@ export function SongForm() {
                         <span>Genre</span>
                         <select
                             value={formData.genre_id}
-                            onChange={e => setFormData({ ...formData, genre_id: e.target.value })}
+                            onChange={e => setFormData({ ...formData, genre_id: Number(e.target.value) })}
                         >
                             <option value="" disabled>
                                 Choose genre...
@@ -185,8 +194,8 @@ export function SongForm() {
                     <label>
                         <span>Status</span>
                         <select
-                            value={formData.status_id || "Idea"}
-                            onChange={e => setFormData({ ...formData, status_id: e.target.value })}
+                            value={formData.status_id}
+                            onChange={e => setFormData({ ...formData, status_id: Number(e.target.value) })}
                         >
                             {STATUS_OPTIONS.map(option => (
                                 <option key={option.value} value={option.value}>
@@ -198,9 +207,50 @@ export function SongForm() {
 
                     <label>
                         <span>Links</span>
-                        <button type="button" onClick={() => setShowLinkForm(!showLinkForm)}> Add Link</button>
+                        <button type="button" onClick={() => setShowLinkForm(!showLinkForm)}>
+                            {showLinkForm ? 'Hide' : 'Add'} Link
+                        </button>
                     </label>
-                    {showLinkForm && <LinkForm linkTypes={linkTypes} fetchLinkTypes={fetchLinkTypes}/> }
+
+                    {/* ✅ Show existing links in edit mode */}
+                    {inEditMode && originalSong?.links?.length > 0 && (
+                        <div className="existing-links">
+                            <strong>Existing Links:</strong>
+                            {originalSong.links.map(link => (
+                                <div key={link.id}>
+                                    {link.url_type}: {link.url_link}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    
+
+                    {/* ✅ Show new unsaved links */}
+                    {newLinks.length > 0 && (
+                        <div className="new-links">
+                            <strong>New Links (unsaved):</strong>
+                            {newLinks.map((link, i) => (
+                                <div key={i}>
+                                    {link.url_type}: {link.url_link}
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setNewLinks(prev => prev.filter((_, idx) => idx !== i))}
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* ✅ Updated LinkForm props */}
+                    {showLinkForm && (
+                        <LinkForm
+                            linkTypes={linkTypes}
+                            onAddLink={handleAddLink}
+                        />
+                    )}
 
                     <div className="form-buttons">
                         <button type="button" onClick={handleCancel} className="cancel-btn">

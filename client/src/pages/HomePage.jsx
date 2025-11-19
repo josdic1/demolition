@@ -15,6 +15,7 @@ export function HomePage() {
   const [buttonValue, setButtonValue] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const [sortOrder, setSortOrder] = useState('');
+  
 
   // Clean unique extraction using Map
   const uniqueGenres = useMemo(() => {
@@ -42,28 +43,34 @@ export function HomePage() {
     
     // Step 1: Button filter
     if (buttonValue) {
-      result = result.filter(s => 
-        s.genre?.id === buttonValue.id || s.status?.id === buttonValue.id
-      );
+        // Check if it's a genre or status by seeing which array it's in
+        const isGenre = uniqueGenres.some(g => g.id === buttonValue.id);
+        const isStatus = uniqueStatuses.some(st => st.id === buttonValue.id);
+        
+        if (isGenre) {
+            result = result.filter(s => s.genre?.id === buttonValue.id);
+        } else if (isStatus) {
+            result = result.filter(s => s.status?.id === buttonValue.id);
+        }
     }
     
     // Step 2: Search filter
     if (searchValue) {
-      result = result.filter(s =>
-        s.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
-        s.artist?.toLowerCase().includes(searchValue.toLowerCase())
-      );
+        result = result.filter(s =>
+            s.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
+            s.artist?.toLowerCase().includes(searchValue.toLowerCase())
+        );
     }
     
     // Step 3: Sort
     if (sortOrder === 'asc') {
-      result.sort((a, b) => a.title.localeCompare(b.title));
+        result.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortOrder === 'desc') {
-      result.sort((a, b) => b.title.localeCompare(a.title));
+        result.sort((a, b) => b.title.localeCompare(a.title));
     }
     
-    return result;    
-  }, [userSongs, buttonValue, searchValue, sortOrder]);
+    return result;
+}, [userSongs, buttonValue, searchValue, sortOrder, uniqueGenres, uniqueStatuses]);
 
   return (
     <div className="homepage-container">
