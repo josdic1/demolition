@@ -122,35 +122,34 @@ export function AuthProvider({ children }) {
       // ================= Create Link ===================//
 const createLink = async (songId, linkData) => {
     try {
-      const response = await fetch(`${API_URL}/songs/${songId}/links`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(linkData)
-      });
-      if (!response.ok) throw new Error('Failed to create link');
-      
-      const newLink = await response.json();
+        const response = await fetch(`${API_URL}/songs/${songId}/links`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(linkData)
+        });
+        if (!response.ok) throw new Error('Failed to create link');
+        
+        const newLink = await response.json();
 
-      // 1. Map through existing songs to find the one matching songId
-      const updatedSongs = userSongs.map(song => {
-        if (song.id === songId) {
-          // 2. Return a copy of that song with the new link added to its array
-          return { ...song, links: [...song.links, newLink] };
-        }
-        // 3. Leave other songs alone
-        return song;
-      });
+        const updatedSongs = userSongs.map(song => {
+            if (song.id === songId) {
+                // ✅ Handle undefined links array
+                return { 
+                    ...song, 
+                    links: [...(song.links || []), newLink]
+                };
+            }
+            return song;
+        });
 
-      // 4. Update state
-      setUserSongs(updatedSongs);
-
-      return newLink;
+        setUserSongs(updatedSongs);
+        return newLink;
     } catch (error) {
-      console.error("Error creating link:", error);
-      throw error;
+        console.error("Error creating link:", error);
+        throw error;
     }
-  }
+}
 
   
 

@@ -67,13 +67,23 @@ export function SongForm() {
         lyrics: formData.lyrics.trim() || null,
         genre_id: Number(formData.genre_id),
         status_id: Number(formData.status_id),
-        user_id: Number(userInfo.id),
-        links: newLinks
+        user_id: Number(userInfo.id)
     });
 
- const handleCreate = async (e) => {
+const handleCreate = async (e) => {
     e.preventDefault();
-    await createSong(buildPayload()); 
+    
+    // 1. Create the song first (without links in payload)
+    const payload = buildPayload();
+    delete payload.links;  // Remove links from payload
+    
+    const newSong = await createSong(payload);
+    
+    // 2. Then create all the links
+    await Promise.all(
+        newLinks.map(link => createLink(newSong.id, link))
+    );
+    
     navigate('/');
 };
 

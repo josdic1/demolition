@@ -141,7 +141,7 @@ class LinkSchema(ma.SQLAlchemyAutoSchema):
     id = ma.auto_field(dump_only=True)
     url_type = ma.auto_field()
     url_link = ma.auto_field()
-    song_id = ma.auto_field(dump_only=True) 
+    song_id = ma.auto_field()
 
 class SongSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
