@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import '../style/LoginPage.css';
 
 export function LoginPage() {
-    const { login, loggedIn } = useAuth();
+    const { login, loggedIn, signup, inSignupMode, setInSignupMode } = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
@@ -19,6 +19,11 @@ useEffect(() => {
     }, [loggedIn, navigate]);
 
 
+ const onSignUpClick = (e) => {
+  e.preventDefault();  
+  setInSignupMode(true);
+}
+console.log(inSignupMode)
    const onFormChange = (e) => {
         setFormData({
             ...formData,
@@ -29,15 +34,21 @@ useEffect(() => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-        
-        const result = await login(formData); 
-        
+        let result;
+        if (inSignupMode) {
+            result = await signup(formData);
+        } else {
+            result = await login(formData);
+        }
+    
         if (result.success) {
             navigate('/');
         } else {
             setError(result.error);
         }
     };
+
+
    return (
   <div className="login-page-container">
     <div className="login-card">
@@ -63,7 +74,9 @@ useEffect(() => {
           required
         />
         
-        <button type="submit">Login</button>
+        <button type="submit">{inSignupMode ? 'Sign up' : 'Login'}</button>
+        
+        {inSignupMode ? "" :<p>Don't have an account? <button type="button" onClick={onSignUpClick}>Sign up</button></p>}
       </form>
     </div>
   </div>

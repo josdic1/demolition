@@ -6,6 +6,7 @@ export function AuthProvider({ children }) {
     const [userSongs, setUserSongs] = useState([]);  // Just songs array
     const [loading, setLoading] = useState(true); 
     const [inEditMode, setInEditMode] = useState(false);
+    const [inSignupMode, setInSignupMode] = useState(false);
 
     const loggedIn = Boolean(userInfo);
     const API_URL = "http://localhost:5555";
@@ -36,6 +37,29 @@ export function AuthProvider({ children }) {
             console.error("Error checking session:", error);
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function signup(credentials) {
+        try {
+            const res = await fetch(`${API_URL}/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(credentials)  
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const { songs, ...info } = data;
+                setUserInfo(info);
+                setUserSongs(songs || []);
+                return { success: true };
+            } else {
+                const error = await res.json();
+                return { success: false, error: error.error };  
+            }
+        } catch (err) {
+            return { success: false, error: 'Network error' };  
         }
     }
     
@@ -129,6 +153,7 @@ const createLink = async (songId, linkData) => {
     }
   }
 
+  
 
 
         //================= Update Song =================//
@@ -177,6 +202,9 @@ const createLink = async (songId, linkData) => {
         login,
         logout,
         checkSession,
+        signup,
+        inSignupMode,
+        setInSignupMode,
         userInfo,
         userSongs,
         setUserSongs,

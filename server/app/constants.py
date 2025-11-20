@@ -15,3 +15,4 @@ KEY_OPTIONS = [
   "Ab", "A", "A#", "Bb", "B", "Cm", "C#m", "Dm", "D#m", "Ebm", "Em",
   "Fm", "F#m", "Gm", "G#m", "Am", "A#m", "Bm"
 ]
+

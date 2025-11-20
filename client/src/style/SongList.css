@@ -71,3 +71,101 @@
     font-family: monospace;
     color: #666;
 }
+
+/* Song Item Row Styles */
+.song-item-row {
+    transition: background-color 0.2s;
+}
+
+.song-item-row:hover {
+    background-color: #f0f8ff;
+}
+
+.song-item-row td {
+    vertical-align: middle;
+}
+
+.song-item-date {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.song-item-actions {
+    white-space: nowrap;
+    position: relative;
+}
+
+/* Links Toggle Button */
+.links-toggle {
+    background: transparent;
+    border: 1px solid #007bff;
+    color: #007bff;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-family: monospace;
+}
+
+.links-toggle:hover {
+    background: #007bff;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Links Bubble */
+.links-bubble {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 150px;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Link Buttons Inside Bubble */
+.link-button {
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #495057;
+    font-size: 13px;
+    font-family: monospace;
+    text-align: center;
+    transition: all 0.2s;
+    display: block;
+}
+
+.link-button:hover {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+    transform: translateX(3px);
+}
+
+.link-button:active {
+    transform: translateX(3px) scale(0.98);
+}
