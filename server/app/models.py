@@ -161,7 +161,7 @@ class SongSchema(ma.SQLAlchemyAutoSchema):
     
     # Accept these when creating/updating (POST/PATCH)
     user_id = ma.auto_field(load_only=True)
-    genre_id = ma.auto_field(load_only=True)
+    genre_id = ma.auto_field(load_only=True, required=True)
     status_id = ma.auto_field(load_only=True)
     
     # Return these when fetching (GET)

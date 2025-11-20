@@ -28,8 +28,8 @@ export function SongItem({ song, deleteSong }) {
 <tr className="song-item-row" id={song.id}>
     <td>{song.title}</td>
     <td>{song.artist}</td>
-    <td>{song.genre.name}</td>
-    <td>{song.status.name}</td>
+    <td>{song.genre?.name || 'Unknown'}</td>
+    <td>{song.status?.name || 'Unknown'}</td>
     <td className="song-item-actions">
         {song.links.length > 0 && (
             <>

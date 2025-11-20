@@ -29,6 +29,7 @@
 .song-form-card label {
   display: block;
   margin-bottom: 1.6rem;
+  position: relative;
 }
 
 .song-form-card label span {
@@ -56,7 +57,7 @@
 .song-form-card textarea:focus,
 .song-form-card select:focus {
   outline: none;
-  border-color: #4f46e5; /* Matches theme */
+  border-color: #4f46e5;
   background: white;
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
@@ -77,7 +78,6 @@
 
 /* ================= BUTTON STYLES ================= */
 
-/* 1. Base Button Style (Matches SongCard) */
 .song-form-card button {
   padding: 0.7rem 1.4rem;         
   border: none;
@@ -89,7 +89,6 @@
   transition: all 0.2s;          
 }
 
-/* 2. Submit Button (Primary - Blurple) */
 .song-form-card button[type="submit"] {
   background: #4f46e5; 
   color: white;
@@ -101,7 +100,6 @@
   box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
 }
 
-/* 3. Cancel Button (Secondary/Destructive Style) */
 .cancel-btn {
   background: #dc3545;
   color: white;
@@ -113,11 +111,10 @@
   box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
 }
 
-/* 4. Back Button (Link Style) */
 .back-btn {
   background: none !important;
   border: none !important;
-  color: #4f46e5; /* Matches theme */
+  color: #4f46e5;
   cursor: pointer;
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
@@ -125,11 +122,156 @@
   margin-bottom: 1rem;
   display: inline-block;
   transition: color 0.2s;
-  box-shadow: none !important; /* Remove card shadow if applied */
+  box-shadow: none !important;
 }
 
 .back-btn:hover {
   color: #4338ca;
   text-decoration: underline;
-  transform: none !important; /* Don't lift the back button */
+  transform: none !important;
+}
+
+/* ================= ARTIST AUTOCOMPLETE ================= */
+
+.artist-suggestions {
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  margin-top: -8px;
+}
+
+.artist-suggestion-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  color: #333;
+  transition: all 0.15s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.artist-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.artist-suggestion-item:hover {
+  background: #4f46e5;
+  color: white;
+}
+
+/* ================= LINKS SECTION ================= */
+
+.links-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #eee;
+}
+
+.links-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.links-header label {
+  margin: 0;
+  font-weight: bold;
+  color: #333;
+  font-size: 1rem;
+}
+
+.secondary-btn {
+  background: #6c757d;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.secondary-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+}
+
+.saved-links-container {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.pending-links-container {
+  margin-top: 10px;
+  padding: 10px;
+  background: #fff4e5;
+  border-radius: 4px;
+  border: 1px solid #ffe0b2;
+}
+
+.links-label {
+  font-weight: bold;
+  color: #666;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.pending-links-container .links-label {
+  color: #e65100;
+}
+
+.link-item {
+  display: flex;
+  gap: 10px;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.link-type {
+  font-weight: bold;
+  min-width: 80px;
+}
+
+.link-url {
+  word-break: break-all;
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.link-url:hover {
+  text-decoration: underline;
+}
+
+.pending-link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.pending-link-text {
+  font-size: 0.9rem;
+}
+
+.remove-link-btn {
+  padding: 0 5px !important;
+  margin-left: 10px;
+  background: none !important;
+  border: none !important;
+  cursor: pointer;
+  color: red;
+  font-size: 1.2rem;
+  box-shadow: none !important;
+}
+
+.remove-link-btn:hover {
+  color: darkred;
+  transform: none !important;
 }

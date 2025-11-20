@@ -2,8 +2,8 @@ import { useAuth } from "../hooks/useAuth";
 import { useSong } from "../hooks/useSong";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { GENRE_OPTIONS, STATUS_OPTIONS } from "../static/options";
-import { LinkForm } from "../components/LinkForm"; // Adjusted path assuming components folder
+import { ARTIST_OPTIONS, GENRE_OPTIONS, STATUS_OPTIONS } from "../static/options";
+import { LinkForm } from "../components/LinkForm"; 
 import '../style/SongForm.css';
 
 export function SongForm() {
@@ -12,6 +12,8 @@ export function SongForm() {
     const [originalSong, setOriginalSong] = useState(null);
     const [showLinkForm, setShowLinkForm] = useState(false);
     const [newLinks, setNewLinks] = useState([]); 
+    const [artistMatch, setArtistMatch] = useState(null);
+    const [showList, setShowList] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -21,6 +23,7 @@ export function SongForm() {
     };
 
     const [formData, setFormData] = useState(initialFormData);
+    const artists = ARTIST_OPTIONS // artists is a static array of ARTIST_OPTIONS
 
     // 1. Set Edit Mode based on URL param
     useEffect(() => {
@@ -75,13 +78,9 @@ export function SongForm() {
     const handleCreate = async (e) => {
         e.preventDefault();
         
-        // 1. Create the song first (without links in payload)
         const payload = buildPayload();
-        // Ensure we don't accidentally send links array in the song body
-        
         const newSong = await createSong(payload);
         
-        // 2. Then create all the links associated with the new song ID
         if (newLinks.length > 0) {
             await Promise.all(
                 newLinks.map(link => createLink(newSong.id, link))
@@ -95,7 +94,6 @@ export function SongForm() {
         e.preventDefault();
         await updateSong(originalSong.id, buildPayload());
         
-        // Create new links
         if (newLinks.length > 0) {
             await Promise.all(
                 newLinks.map(link => createLink(originalSong.id, link))
@@ -116,12 +114,29 @@ export function SongForm() {
         setNewLinks(prev => [...prev, link]);
     };
 
+    const onArtistInput = (e) => {
+        const value = e.target.value;
+
+        setFormData(prev => ({ ...prev, artist: value }));
+
+        if (!value.trim()) {
+            setArtistMatch([]);
+            return;
+        }
+
+        const filtered = ARTIST_OPTIONS.filter(artist =>
+            artist.label.toLowerCase().includes(value.toLowerCase())
+        );
+
+        setArtistMatch(filtered);
+    };
+
     return (
         <div className="song-form-page">
             <div className="song-form-card">
-                      <button onClick={() => navigate('/')} className="back-btn">
-        ← Back to Songs
-      </button>
+                <button onClick={() => navigate('/')} className="back-btn">
+                    ← Back to Songs
+                </button>
                 <h2>{inEditMode ? 'Edit Song' : 'Add New Song'}</h2>
 
                 <form onSubmit={inEditMode ? handleUpdate : handleCreate}>
@@ -140,9 +155,25 @@ export function SongForm() {
                         <input
                             type="text"
                             value={formData.artist}
-                            onChange={e => setFormData({ ...formData, artist: e.target.value })}
+                            onChange={onArtistInput}
                             required
                         />
+                        {artistMatch && artistMatch.length > 0 && (
+                            <div className="artist-suggestions">
+                                {artistMatch.map(artist => (
+                                    <div 
+                                        key={artist.value}
+                                        className="artist-suggestion-item"
+                                        onClick={() => {
+                                            setFormData(prev => ({ ...prev, artist: artist.label }));
+                                            setArtistMatch([]);
+                                        }}
+                                    >
+                                        {artist.label}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </label>
 
                     <label>
@@ -218,8 +249,8 @@ export function SongForm() {
 
                     {/* Links Section */}
                     <div className="links-section">
-                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem'}}>
-                            <label style={{margin: 0}}>Links</label>
+                        <div className="links-header">
+                            <label>Links</label>
                             <button type="button" onClick={() => setShowLinkForm(!showLinkForm)} className="secondary-btn">
                                 {showLinkForm ? 'Hide Link Form' : '+ Add Link'}
                             </button>
@@ -227,14 +258,14 @@ export function SongForm() {
 
                         {/* 1. Existing Links (DB) */}
                         {inEditMode && originalSong?.links?.length > 0 && (
-                            <div className="existing-links" style={{ marginTop: '10px', padding: '10px', background: '#f9f9f9', borderRadius: '4px' }}>
-                                <small style={{ fontWeight: 'bold', color: '#666' }}>SAVED LINKS</small>
+                            <div className="saved-links-container">
+                                <small className="links-label">SAVED LINKS</small>
                                 {[...originalSong.links]
                                     .sort((a, b) => a.url_type.localeCompare(b.url_type))
                                     .map(link => (
-                                        <div key={link.id} style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', marginTop: '4px' }}>
-                                            <span style={{ fontWeight: 'bold', minWidth: '80px' }}>{link.url_type}:</span>
-                                            <a href={link.url_link} target="_blank" rel="noreferrer" style={{ wordBreak: 'break-all' }}>
+                                        <div key={link.id} className="link-item">
+                                            <span className="link-type">{link.url_type}:</span>
+                                            <a href={link.url_link} target="_blank" rel="noreferrer" className="link-url">
                                                 {link.url_link}
                                             </a>
                                         </div>
@@ -244,19 +275,19 @@ export function SongForm() {
 
                         {/* 2. New Links (Pending Save) */}
                         {newLinks.length > 0 && (
-                            <div className="new-links" style={{ marginTop: '10px', padding: '10px', background: '#fff4e5', borderRadius: '4px', border: '1px solid #ffe0b2' }}>
-                                <small style={{ fontWeight: 'bold', color: '#e65100' }}>TO BE ADDED (Click Save to confirm)</small>
+                            <div className="pending-links-container">
+                                <small className="links-label">TO BE ADDED (Click Save to confirm)</small>
                                 {[...newLinks]
                                     .sort((a, b) => a.url_type.localeCompare(b.url_type))
                                     .map((link, i) => (
-                                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
-                                            <span style={{ fontSize: '0.9rem' }}>
+                                        <div key={i} className="pending-link-item">
+                                            <span className="pending-link-text">
                                                 <strong>{link.url_type}:</strong> {link.url_link}
                                             </span>
                                             <button 
                                                 type="button" 
                                                 onClick={() => setNewLinks(prev => prev.filter((_, idx) => idx !== i))}
-                                                style={{ padding: '0 5px', marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer', color: 'red' }}
+                                                className="remove-link-btn"
                                             >
                                                 ✕
                                             </button>
@@ -274,7 +305,7 @@ export function SongForm() {
                         )}
                     </div>
 
-                    <div className="form-buttons" style={{ marginTop: '2rem' }}>
+                    <div className="form-buttons">
                         <button type="button" onClick={handleCancel} className="cancel-btn">
                             Cancel
                         </button>
