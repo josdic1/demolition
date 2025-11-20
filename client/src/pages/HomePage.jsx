@@ -1,12 +1,15 @@
 import { useAuth } from '../hooks/useAuth.jsx';
 import { useSong } from '../hooks/useSong.jsx';
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { StateBar } from '../components/StateBar.jsx';
 import { SongList } from '../components/SongList.jsx';
 import { SongSearchBar } from '../components/SongSearchBar.jsx';
 import { UserGenreButtons } from '../components/UserGenreButtons.jsx';
 import { UserStatusButtons } from '../components/UserStatusButtons.jsx';
+import { Plus } from 'lucide-react';
 import '../style/HomePage.css';
+
 
 export function HomePage() {
   const { userInfo, userSongs, loading, deleteSong, loggedIn } = useAuth();
@@ -16,7 +19,7 @@ export function HomePage() {
   const [selectedStatus, setSelectedStatus] = useState('all'); 
   const [searchValue, setSearchValue] = useState('');
   const [sortOrder, setSortOrder] = useState('');
-
+  const navigate = useNavigate();
   // Clean unique extraction using Map
   const uniqueGenres = useMemo(() => {
     if (!userSongs) return [];
@@ -126,7 +129,10 @@ export function HomePage() {
           onSearch={setSearchValue}
         />
       </div>
-      
+      <div className="controls-header">
+      <button type="button" className='add-button' onClick={() => navigate('/songs')}> <Plus size={18} strokeWidth={3} /> 
+        <span>Add New</span></button>
+       
       <button 
         className="sort-button"
         onClick={() => {
@@ -137,7 +143,7 @@ export function HomePage() {
       >
         Sort: {sortOrder === 'asc' ? '↑ A-Z' : sortOrder === 'desc' ? '↓ Z-A' : '—'}
       </button>
-
+</div>
       <SongList songs={finalSongs} deleteSong={deleteSong} />
 
       {finalSongs.length === 0 && (

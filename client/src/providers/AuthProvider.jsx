@@ -110,7 +110,7 @@ export function AuthProvider({ children }) {
             });
             if (!response.ok) throw new Error('Failed to create song');
             const newSong = await response.json();
-            setUserSongs([...userSongs, newSong]);
+            setUserSongs(prevSongs => [...prevSongs, newSong]);
             return newSong;
         } catch (error) {
             console.error("Error creating song:", error);
@@ -132,18 +132,19 @@ const createLink = async (songId, linkData) => {
         
         const newLink = await response.json();
 
-        const updatedSongs = userSongs.map(song => {
-            if (song.id === songId) {
-                // ✅ Handle undefined links array
-                return { 
-                    ...song, 
-                    links: [...(song.links || []), newLink]
-                };
-            }
-            return song;
+        // ✅ FIX: Use functional update (prevSongs)
+        setUserSongs(prevSongs => {
+            return prevSongs.map(song => {
+                if (song.id === songId) {
+                    return { 
+                        ...song, 
+                        links: [...(song.links || []), newLink]
+                    };
+                }
+                return song;
+            });
         });
 
-        setUserSongs(updatedSongs);
         return newLink;
     } catch (error) {
         console.error("Error creating link:", error);
@@ -155,44 +156,47 @@ const createLink = async (songId, linkData) => {
 
 
         //================= Update Song =================//
-    const updateSong = async (id, songData) => {
-        try {
-            
-            const response = await fetch(`${API_URL}/songs/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(songData)
-            });
-            if (!response.ok) throw new Error('Failed to update song');
-            const updatedSong = await response.json();
-            const updatedSongs = userSongs.map((song) =>
-                song.id === updatedSong.id ? updatedSong : song
-            );
-            setUserSongs(updatedSongs);
-            return updatedSong;
-        } catch (error) {
-            console.error("Error updating song:", error);
-            throw error;
-        }
+const updateSong = async (id, songData) => {
+    try {
+        const response = await fetch(`${API_URL}/songs/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(songData)
+        });
+        if (!response.ok) throw new Error('Failed to update song');
+        const updatedSong = await response.json();
+
+        // ✅ FIX: Use functional update
+        setUserSongs(prevSongs => 
+            prevSongs.map((song) => song.id === updatedSong.id ? updatedSong : song)
+        );
+        
+        return updatedSong;
+    } catch (error) {
+        console.error("Error updating song:", error);
+        throw error;
     }
+}
 
       //================= Delete Song =================//
-  const deleteSong = async (id) => {
-    const updatedSongs = userSongs.filter((song) => song.id !== id);
+const deleteSong = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/songs/${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to delete song');
-      setUserSongs(updatedSongs);
-      return await response.json();
+        const response = await fetch(`${API_URL}/songs/${id}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+        if (!response.ok) throw new Error('Failed to delete song');
+        
+        // ✅ FIX: Filter inside the setter, only after success
+        setUserSongs(prevSongs => prevSongs.filter((song) => song.id !== id));
+        
+        return await response.json();
     } catch (error) {
-      console.error("Error deleting song:", error);
-      throw error;
+        console.error("Error deleting song:", error);
+        throw error;
     }
-  }
+}
 
     const value = useMemo(() => ({ 
         loading,

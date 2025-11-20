@@ -3,7 +3,7 @@ import { useSong } from "../hooks/useSong";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { GENRE_OPTIONS, STATUS_OPTIONS } from "../static/options";
-import { LinkForm } from "./LinkForm";
+import { LinkForm } from "../components/LinkForm"; // Adjusted path assuming components folder
 import '../style/SongForm.css';
 
 export function SongForm() {
@@ -22,17 +22,19 @@ export function SongForm() {
 
     const [formData, setFormData] = useState(initialFormData);
 
+    // 1. Set Edit Mode based on URL param
     useEffect(() => {
+        if (id) {
+            setInEditMode(true);
+        }
+    }, [id, setInEditMode]);
 
-    if (id) {
-        setInEditMode(true);
-    }
-}, [id, setInEditMode]);
+    // 2. Fetch Link Types / Keys on mount
+    useEffect(() => {
+        fetchFormData();
+    }, []);
 
-  useEffect(() => {
-    fetchFormData();
-  }, []);
-
+    // 3. Populate Form Data if in Edit Mode
     useEffect(() => {
         if (inEditMode && id) {
             const song = userSongs.find(s => s.id === Number(id));
@@ -49,12 +51,12 @@ export function SongForm() {
                     genre_id: song.genre?.id || '',
                     status_id: song.status?.id || 1
                 });
-                setNewLinks([]);  // ✅ Add this
+                setNewLinks([]); 
             }
         } else {
             setFormData(initialFormData);
             setOriginalSong(null);
-            setNewLinks([]);  // ✅ Add this
+            setNewLinks([]); 
         }
     }, [inEditMode, id, userSongs]);
 
@@ -70,31 +72,35 @@ export function SongForm() {
         user_id: Number(userInfo.id)
     });
 
-const handleCreate = async (e) => {
-    e.preventDefault();
-    
-    // 1. Create the song first (without links in payload)
-    const payload = buildPayload();
-    delete payload.links;  // Remove links from payload
-    
-    const newSong = await createSong(payload);
-    
-    // 2. Then create all the links
-    await Promise.all(
-        newLinks.map(link => createLink(newSong.id, link))
-    );
-    
-    navigate('/');
-};
+    const handleCreate = async (e) => {
+        e.preventDefault();
+        
+        // 1. Create the song first (without links in payload)
+        const payload = buildPayload();
+        // Ensure we don't accidentally send links array in the song body
+        
+        const newSong = await createSong(payload);
+        
+        // 2. Then create all the links associated with the new song ID
+        if (newLinks.length > 0) {
+            await Promise.all(
+                newLinks.map(link => createLink(newSong.id, link))
+            );
+        }
+        
+        navigate('/');
+    };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
         await updateSong(originalSong.id, buildPayload());
         
-        // ✅ Create new links
-        await Promise.all(
-            newLinks.map(link => createLink(originalSong.id, link))
-        );
+        // Create new links
+        if (newLinks.length > 0) {
+            await Promise.all(
+                newLinks.map(link => createLink(originalSong.id, link))
+            );
+        }
         
         navigate('/');
         setInEditMode(false);
@@ -103,10 +109,9 @@ const handleCreate = async (e) => {
     const handleCancel = () => {
         navigate('/');
         setInEditMode(false);
-        setNewLinks([]);  // ✅ Add this
+        setNewLinks([]); 
     };
 
-    // ✅ Add this function
     const handleAddLink = (link) => {
         setNewLinks(prev => [...prev, link]);
     };
@@ -114,6 +119,9 @@ const handleCreate = async (e) => {
     return (
         <div className="song-form-page">
             <div className="song-form-card">
+                      <button onClick={() => navigate('/')} className="back-btn">
+        ← Back to Songs
+      </button>
                 <h2>{inEditMode ? 'Edit Song' : 'Add New Song'}</h2>
 
                 <form onSubmit={inEditMode ? handleUpdate : handleCreate}>
@@ -162,13 +170,9 @@ const handleCreate = async (e) => {
                                 value={formData.key}
                                 onChange={e => setFormData({ ...formData, key: e.target.value })}
                             >
-                                <option value="" disabled>
-                                    Choose key...
-                                </option>
+                                <option value="" disabled>Choose key...</option>
                                 {songKeys.map(key => (
-                                    <option key={key} value={key}>
-                                        {key}
-                                    </option>
+                                    <option key={key} value={key}>{key}</option>
                                 ))}
                             </select>
                         </label>
@@ -189,9 +193,7 @@ const handleCreate = async (e) => {
                             value={formData.genre_id}
                             onChange={e => setFormData({ ...formData, genre_id: Number(e.target.value) })}
                         >
-                            <option value="" disabled>
-                                Choose genre...
-                            </option>
+                            <option value="" disabled>Choose genre...</option>
                             {GENRE_OPTIONS.sort((a, b) => a.label.localeCompare(b.label)).map(option => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
@@ -214,58 +216,65 @@ const handleCreate = async (e) => {
                         </select>
                     </label>
 
-                    <label>
-                        <span>Links</span>
-                        <button type="button" onClick={() => setShowLinkForm(!showLinkForm)}>
-                            {showLinkForm ? 'Hide' : 'Add'} Link
-                        </button>
-                    </label>
+                    {/* Links Section */}
+                    <div className="links-section">
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem'}}>
+                            <label style={{margin: 0}}>Links</label>
+                            <button type="button" onClick={() => setShowLinkForm(!showLinkForm)} className="secondary-btn">
+                                {showLinkForm ? 'Hide Link Form' : '+ Add Link'}
+                            </button>
+                        </div>
 
-                    {/* ✅ Show existing links in edit mode */}
-                  {inEditMode && originalSong?.links?.length > 0 && (
-    <div className="existing-links">
-        <strong>Existing Links:</strong>
-        {[...originalSong.links]
-            .sort((a, b) => a.url_type.localeCompare(b.url_type)) // Sort by Type
-            .map(link => (
-                <div key={link.id}>
-                    {link.url_type}: {link.url_link}
-                </div>
-        ))}
-    </div>
-)}
+                        {/* 1. Existing Links (DB) */}
+                        {inEditMode && originalSong?.links?.length > 0 && (
+                            <div className="existing-links" style={{ marginTop: '10px', padding: '10px', background: '#f9f9f9', borderRadius: '4px' }}>
+                                <small style={{ fontWeight: 'bold', color: '#666' }}>SAVED LINKS</small>
+                                {[...originalSong.links]
+                                    .sort((a, b) => a.url_type.localeCompare(b.url_type))
+                                    .map(link => (
+                                        <div key={link.id} style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', marginTop: '4px' }}>
+                                            <span style={{ fontWeight: 'bold', minWidth: '80px' }}>{link.url_type}:</span>
+                                            <a href={link.url_link} target="_blank" rel="noreferrer" style={{ wordBreak: 'break-all' }}>
+                                                {link.url_link}
+                                            </a>
+                                        </div>
+                                ))}
+                            </div>
+                        )}
 
-                    
+                        {/* 2. New Links (Pending Save) */}
+                        {newLinks.length > 0 && (
+                            <div className="new-links" style={{ marginTop: '10px', padding: '10px', background: '#fff4e5', borderRadius: '4px', border: '1px solid #ffe0b2' }}>
+                                <small style={{ fontWeight: 'bold', color: '#e65100' }}>TO BE ADDED (Click Save to confirm)</small>
+                                {[...newLinks]
+                                    .sort((a, b) => a.url_type.localeCompare(b.url_type))
+                                    .map((link, i) => (
+                                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+                                            <span style={{ fontSize: '0.9rem' }}>
+                                                <strong>{link.url_type}:</strong> {link.url_link}
+                                            </span>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setNewLinks(prev => prev.filter((_, idx) => idx !== i))}
+                                                style={{ padding: '0 5px', marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer', color: 'red' }}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                ))}
+                            </div>
+                        )}
 
-                    {/* ✅ Show new unsaved links */}
-                   {newLinks.length > 0 && (
-    <div className="new-links">
-        <strong>New Links (unsaved):</strong>
-        {[...newLinks]
-            .sort((a, b) => a.url_type.localeCompare(b.url_type)) // Sort by Type
-            .map((link, i) => (
-                <div key={i}>
-                                    {link.url_type}: {link.url_link}
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setNewLinks(prev => prev.filter((_, idx) => idx !== i))}
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-        ))}
-    </div>
-)}
+                        {/* 3. The Form Component */}
+                        {showLinkForm && (
+                            <LinkForm
+                                linkTypes={linkTypes}
+                                onAddLink={handleAddLink}
+                            />
+                        )}
+                    </div>
 
-                    {/* ✅ Updated LinkForm props */}
-                    {showLinkForm && (
-                        <LinkForm
-                            linkTypes={linkTypes}
-                            onAddLink={handleAddLink}
-                        />
-                    )}
-
-                    <div className="form-buttons">
+                    <div className="form-buttons" style={{ marginTop: '2rem' }}>
                         <button type="button" onClick={handleCancel} className="cancel-btn">
                             Cancel
                         </button>

@@ -17,3 +17,13 @@ export const GENRE_OPTIONS = [
   { value: 7, label: "Pop" },
   { value: 8, label: "Alternative" }
 ];
+
+export const ARTIST_OPTIONS = [
+  { value: 1, label: "Beautiful's Dream" },
+  { value: 2, label: "Dare County" },
+  { value: 3, label: "Dickenz" },
+  { value: 4, label: "Humble Beginnings" },
+  { value: 5, label: "Patent Pending" },
+  { value: 6, label: "The Forever Endeavor" },
+  { value: 7, label: "TRPX" }
+];
