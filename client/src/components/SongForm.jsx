@@ -10,10 +10,9 @@ export function SongForm() {
     const { userInfo, userSongs, inEditMode, setInEditMode, createSong, updateSong, createLink } = useAuth();
     const { linkTypes, songKeys, fetchFormData } = useSong();
     const [originalSong, setOriginalSong] = useState(null);
-    const [showLinkForm, setShowLinkForm] = useState(false);
+    const [showLinkForm, setShowLinkForm] = useState(true);
     const [newLinks, setNewLinks] = useState([]); 
     const [artistMatch, setArtistMatch] = useState(null);
-    const [showList, setShowList] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
 

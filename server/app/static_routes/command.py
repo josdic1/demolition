@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, render_template
 from app.extensions import db
-from app.models import User, Link, Song, Genre, Status, song_schema, songs_schema, genre_schema, genres_schema, song_schema, songs_schema, genre_schema, genres_schema, status_schema, statuses_schema
+from app.models import User, Link, Song, Genre, Status
 import os
 
 command_bp = Blueprint('command', __name__)
@@ -19,6 +19,7 @@ def seed():
         return jsonify({'message': 'Database seeded successfully!'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @command_bp.route('/nuke', methods=['POST'])
 def nuke_database():
@@ -63,6 +64,9 @@ from app.models import User, Status, Genre, Song, Link
 def seed_database():
     app = create_app()
     with app.app_context():
+        print("Creating database tables...")
+        db.create_all()
+        
         print("Clearing database...")
         try:
             Link.query.delete()
@@ -78,6 +82,7 @@ def seed_database():
         print("Creating users...")
 '''
 
+        # Create user variables
         for user in users:
             var_name = user.name.lower().replace(" ", "_")
             seed_content += f'        {var_name} = User(name="{user.name}", email="{user.email}")\n'
@@ -87,6 +92,7 @@ def seed_database():
             [u.name.lower().replace(" ", "_") for u in users]) + '])\n'
         seed_content += '        db.session.commit()\n\n'
 
+        # Create status variables
         seed_content += '        print("Creating statuses...")\n'
         for status in statuses:
             var_name = status.name.lower().replace(" ", "_")
@@ -96,6 +102,7 @@ def seed_database():
             [s.name.lower().replace(" ", "_") for s in statuses]) + '])\n'
         seed_content += '        db.session.commit()\n\n'
 
+        # Create genre variables
         seed_content += '        print("Creating genres...")\n'
         for genre in genres:
             var_name = genre.name.lower().replace(" ", "_").replace("'", "").replace("-", "_")
@@ -105,45 +112,68 @@ def seed_database():
             [g.name.lower().replace(" ", "_").replace("'", "").replace("-", "_") for g in genres]) + '])\n'
         seed_content += '        db.session.commit()\n\n'
 
+        # Create songs using data structure
         seed_content += '        print("Creating songs...")\n'
-        for i, song in enumerate(songs, 1):
-            lyrics_escaped = song.lyrics.replace('"', '\\"').replace('\n', '\\n') if song.lyrics else ""
-            user_var = song.user.name.lower().replace(" ", "_")
-            genre_var = song.genre.name.lower().replace(" ", "_").replace("'", "").replace("-", "_")
-            status_var = song.status.name.lower().replace(" ", "_")
+        seed_content += '        \n'
+        seed_content += '        songs_data = [\n'
+        
+        for song in songs:
+            # Escape special characters
+            title_escaped = song.title.replace('"', '\\"')
+            artist_escaped = song.artist.replace('"', '\\"')
+            about_escaped = song.about.replace('"', '\\"') if song.about else ""
             
-            seed_content += f'''        song{i} = Song(
-            title="{song.title}",
-            artist="{song.artist}",
-            about="{song.about if song.about else ''}",
-            lyrics="""{lyrics_escaped}""",
-            bpm={song.bpm if song.bpm else "None"},
-            key="{song.key}" if {song.key is not None} else None,
-            user={user_var},
-            genre={genre_var},
-            status={status_var}
-        )
-        db.session.add(song{i})
-        db.session.commit()
+            # Build links list
+            links_list = ', '.join([f'("{link.url_type}", "{link.url_link}")' for link in song.links])
+            
+            seed_content += f'            {{"title": "{title_escaped}", "artist": "{artist_escaped}", '
+            seed_content += f'"about": "{about_escaped}", '
+            seed_content += f'"key": '
+            if song.key:
+                seed_content += f'"{song.key}"'
+            else:
+                seed_content += 'None'
+            seed_content += f', "links": [{links_list}]}},\n'
+        
+        seed_content += '        ]\n\n'
 
-'''
-            for link in song.links:
-                seed_content += f'        link{i}_{link.id} = Link(url_type="{link.url_type}", url_link="{link.url_link}", song=song{i})\n'
-                seed_content += f'        db.session.add(link{i}_{link.id})\n'
+        # Create songs from data
+        seed_content += '''        # Create all songs and links
+        for song_data in songs_data:
+            song = Song(
+                title=song_data["title"],
+                artist=song_data["artist"],
+                about=song_data["about"],
+                lyrics=None,
+                bpm=None,
+                key=song_data.get("key"),
+                user=josh,
+                genre=punk,
+                status=released
+            )
+            db.session.add(song)
+            db.session.commit()
+            
+            # Add links for this song
+            for link_type, link_url in song_data["links"]:
+                link = Link(url_type=link_type, url_link=link_url, song=song)
+                db.session.add(link)
+            
+            db.session.commit()
 
-            seed_content += '        db.session.commit()\n\n'
-
-        seed_content += '''        print("✅ Database seeded successfully!")
+        print("✅ Database seeded successfully!")
         print(f"Created {User.query.count()} users")
         print(f"Created {Status.query.count()} statuses")
         print(f"Created {Genre.query.count()} genres")
         print(f"Created {Song.query.count()} songs")
+        print(f"Created {Link.query.count()} links")
 
 
 if __name__ == '__main__':
     seed_database()
 '''
 
+        # Write to seed file
         seed_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'seed.py')
         with open(seed_path, 'w') as f:
             f.write(seed_content)

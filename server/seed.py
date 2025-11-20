@@ -1,33 +1,34 @@
-# seed.py
 from app import create_app
 from app.extensions import db
-from app.models import User, Genre, Status, Song, Link
+from app.models import User, Status, Genre, Song, Link
 
 def seed_database():
     app = create_app()
     with app.app_context():
-        db.drop_all()
+        print("Creating database tables...")
         db.create_all()
+        
+        print("Clearing database...")
+        try:
+            Link.query.delete()
+            Song.query.delete()
+            Genre.query.delete()
+            Status.query.delete()
+            User.query.delete()
+            db.session.commit()
+        except Exception as e:
+            print(f"Error clearing: {e}")
+            db.session.rollback()
 
-        # Users
+        print("Creating users...")
         josh = User(name="Josh", email="joshuadicker@gmail.com")
-        josh.set_password("1111")
+        josh.set_password("password123")
         dor = User(name="Dor", email="dor@dor.com")
-        dor.set_password("1111")
+        dor.set_password("password123")
         db.session.add_all([josh, dor])
+        db.session.commit()
 
-        # Genres
-        rock = Genre(name="Rock")
-        hiphop = Genre(name="Hip-Hop")
-        edm = Genre(name="EDM")
-        country = Genre(name="Country")
-        punk = Genre(name="Punk")
-        indie = Genre(name="Indie")
-        pop = Genre(name="Pop")
-        alternative = Genre(name="Alternative")
-        db.session.add_all([rock, hiphop, edm, country, punk, indie, pop, alternative])
-
-        # Statuses
+        print("Creating statuses...")
         idea = Status(name="Idea")
         lyrics = Status(name="Lyrics")
         demo = Status(name="Demo")
@@ -35,47 +36,262 @@ def seed_database():
         released = Status(name="Released")
         doh = Status(name="DOH")
         db.session.add_all([idea, lyrics, demo, completed, released, doh])
-
-        db.session.flush()
-
-        # Songs (30 real ones)
-        song1 = Song(title="Afterglow", artist="Beautiful's Dream", about="A shimmering breakup anthem about finding peace in the pain of letting go.", bpm=88, key="E", lyrics="And in the afterglow, I found myself again\nDancing through the heartbreak, learning how to mend", user=josh, genre=indie, status=released)
-        song2 = Song(title="Velvet Skies", artist="Beautiful's Dream", about="Ethereal love song painting romance under impossible purple and gold sunsets.", bpm=102, key="Ab", lyrics="We’re floating high where the velvet skies don’t end\nYour hand in mine, this is heaven, my friend", user=dor, genre=pop, status=completed)
-        song3 = Song(title="Ghost Town Heart", artist="Beautiful's Dream", about="Haunting ballad about loving someone who’s emotionally checked out forever.", bpm=75, key="Dm", lyrics="This ghost town heart still beats for you\nEmpty streets and echoes of the truth", user=josh, genre=alternative, status=demo)
-        song4 = Song(title="Neon Blood", artist="Patent Pending", about="Adrenaline-fueled rave anthem about living fast and burning twice as bright.", bpm=128, key="F#m", lyrics="Neon blood in my veins tonight\nWe don’t sleep, we just chase the lights", user=dor, genre=edm, status=released)
-        song5 = Song(title="Emergency Exit", artist="Patent Pending", about="Breakneck pop-punk banger about escaping toxic situations at 100mph.", bpm=182, key="B", lyrics="Hit the gas, smash the glass, emergency exit\nI’m done with this, no regrets", user=josh, genre=punk, status=completed)
-        song6 = Song(title="Sugar Rush Romance", artist="Patent Pending", about="Hyperactive crush song that feels like 3 energy drinks and a confession.", bpm=160, key="A", lyrics="You’re my sugar rush romance, 180 BPM heart\nCan’t slow down when this feeling starts", user=dor, genre=pop, status=lyrics)
-        song7 = Song(title="Whiskey & Vinyl", artist="Dare County", about="Nostalgic bar anthem celebrating old records, cheap whiskey, and lost love.", bpm=85, key="G", lyrics="Put on that record, pour me one more\nWe’re spinning slow on this hardwood floor", user=josh, genre=country, status=released)
-        song8 = Song(title="Backroad Baptism", artist="Dare County", about="Gritty coming-of-age story about finding salvation on empty county roads.", bpm=96, key="D", lyrics="Headlights cut the dark like a backroad baptism\nLord forgive me, I’m still sinning", user=dor, genre=rock, status=completed)
-        song9 = Song(title="Basement Tapes", artist="Humble Beginnings", about="Lo-fi love letter to making music with friends in parents’ basements.", bpm=138, key="Em", lyrics="We wrote our dreams on basement tapes\nFour chords and a broken heart escape", user=josh, genre=indie, status=demo)
-        song10 = Song(title="Cigarettes & Daydreams", artist="Humble Beginnings", about="Melancholic reflection on wasted youth and nicotine-stained memories.", bpm=112, key="Cm", lyrics="Cigarettes and daydreams, burning slow\nWe had the world but let it go", user=dor, genre=alternative, status=lyrics)
-        song11 = Song(title="Atlas Shrugs", artist="The Forever Endeavor", about="Seven-minute emotional journey about carrying the weight of everyone’s expectations.", bpm=70, key="F", lyrics="I carried the world till my spine gave out\nAtlas shrugs and the sky falls down", user=josh, genre=alternative, status=completed)
-        song12 = Song(title="Monuments", artist="The Forever Endeavor", about="Triumphant anthem about building something that outlives your name.", bpm=92, key="Bb", lyrics="We built monuments out of broken chords\nThese songs will stand when we’re dust and gone", user=dor, genre=rock, status=released)
-        song13 = Song(title="Graveyard Shift", artist="Dickenz", about="Midnight trap banger about grinding while the world sleeps.", bpm=140, key="D#m", lyrics="I’m on the graveyard shift, demons pay my rent\nCashing checks written in blood and sweat", user=josh, genre=hiphop, status=released)
-        song14 = Song(title="Porcelain Dolls", artist="Dickenz", about="Cold, cinematic track about fake people and fragile egos.", bpm=75, key="Fm", lyrics="Porcelain dolls with their plastic smiles crack\nOne wrong move and they never come back", user=dor, genre=hiphop, status=completed)
-        song15 = Song(title="King of Ash", artist="Dickenz", about="Self-destructive victory lap from someone who won but lost everything.", bpm=66, key="Cm", lyrics="I’m the king of ash on a throne of smoke\nCrown’s too heavy but I’ll never choke", user=josh, genre=hiphop, status=doh)
-        song16 = Song(title="Satellite Hearts", artist="Beautiful's Dream", about="Long-distance lovers connected only by late-night calls and shared playlists.", bpm=94, key="Gb", lyrics="We’re satellite hearts in a digital sky\n3,000 miles but I feel you tonight", user=dor, genre=indie, status=released)
-        song17 = Song(title="Burn the Rulebook", artist="Patent Pending", about="Rebellious middle finger to industry gatekeepers and trends.", bpm=195, key="E", lyrics="Burn the rulebook, light the match\nWe don’t need permission to crash", user=josh, genre=punk, status=completed)
-        song18 = Song(title="Devil’s Radio", artist="Dare County", about="Outlaw country tale about forbidden love broadcast on pirate frequencies.", bpm=78, key="A", lyrics="Tune in to the devil’s radio tonight\nShe’s singing sins in black and white", user=dor, genre=country, status=released)
-        song19 = Song(title="Polaroid Ghosts", artist="Humble Beginnings", about="Nostalgic ode to faded photos and friends who moved away.", bpm=120, key="G", lyrics="Polaroid ghosts in my dresser drawers\nWe swore forever, now forever’s gone", user=josh, genre=indie, status=demo)
-        song20 = Song(title="Eulogy for the Living", artist="The Forever Endeavor", about="Slow-burning dirge for dreams that died while you were still breathing.", bpm=68, key="Ebm", lyrics="This is the eulogy for the living\nStill walking but long gone within", user=dor, genre=alternative, status=lyrics)
-        song21 = Song(title="Chrome Halo", artist="Dickenz", about="Cyber-trap flex about rising from nothing with ice in your veins.", bpm=150, key="F#", lyrics="Chrome halo, ice in my veins\nI was born in the fire, baptized in the rain", user=josh, genre=hiphop, status=completed)
-        song22 = Song(title="Last Call Lullaby", artist="Beautiful's Dream", about="Bittersweet closing-time song you slow-dance to with a stranger.", bpm=100, key="Db", lyrics="This is the last call lullaby\nKiss me slow before we say goodbye", user=dor, genre=pop, status=released)
-        song23 = Song(title="404", artist="Patent Pending", about="Glitchy drop monster made for warehouse raves at 4AM.", bpm=174, key="G#", lyrics="Error 404: feelings not found\nDrop the beat, burn it all down", user=josh, genre=edm, status=released)
-        song24 = Song(title="Cornfield Cathedral", artist="Dare County", about="Rural gospel-punk hymn sung under stars in the middle of nowhere.", bpm=90, key="C", lyrics="Cornfield cathedral, moon for a steeple\nPraying to a God who forgot his people", user=dor, genre=country, status=completed)
-        song25 = Song(title="Static & Silence", artist="Humble Beginnings", about="Love song transmitted through bad reception and worse timing.", bpm=105, key="Am", lyrics="You’re static and silence on a broken line\nBut I still hear music every single time", user=josh, genre=indie, status=demo)
-        song26 = Song(title="Tidal", artist="The Forever Endeavor", about="Massive oceanic post-rock closer about surrender and rebirth.", bpm=82, key="B", lyrics="I let the tidal wave take me whole\nCame back new with an older soul", user=dor, genre=rock, status=released)
-        song27 = Song(title="Red Ledger", artist="Dickenz", about="Dark confessional track listing every regret in perfect detail.", bpm=72, key="Gm", lyrics="Red ledger full of names I can’t erase\nEvery debt I owe written on my face", user=josh, genre=hiphop, status=doh)
-        song28 = Song(title="Summer Never Ended", artist="Beautiful's Dream", about="Wistful summer romance that somehow lasted forever.", bpm=110, key="F", lyrics="September came but the summer never ended\nWe just kept pretending", user=dor, genre=indie, status=released)
-        song29 = Song(title="404 Heart Not Found", artist="Patent Pending", about="Chaotic breakup song for the digital age.", bpm=188, key="A", lyrics="404 heart not found, server down\nGuess I’ll scream into the void now", user=josh, genre=punk, status=completed)
-        song30 = Song(title="Moonshine Messiah", artist="Dare County", about="Outlaw preacher with a bottle and a bible made of lies.", bpm=84, key="D", lyrics="Moonshine messiah with a crooked grin\nSaving souls and damning them again", user=dor, genre=country, status=released)
-
-        db.session.add_all([song1, song2, song3, song4, song5, song6, song7, song8, song9, song10,
-                            song11, song12, song13, song14, song15, song16, song17, song18, song19, song20,
-                            song21, song22, song23, song24, song25, song26, song27, song28, song29, song30])
-
         db.session.commit()
-        print("Seed complete — 2 users, 8 genres, 6 statuses, 30 real songs. Done.")
 
-if __name__ == "__main__":
+        print("Creating genres...")
+        rock = Genre(name="Rock")
+        hip_hop = Genre(name="Hip-Hop")
+        edm = Genre(name="EDM")
+        country = Genre(name="Country")
+        punk = Genre(name="Punk")
+        indie = Genre(name="Indie")
+        pop = Genre(name="Pop")
+        alternative = Genre(name="Alternative")
+        db.session.add_all([rock, hip_hop, edm, country, punk, indie, pop, alternative])
+        db.session.commit()
+
+        print("Creating songs...")
+        
+        songs_data = [
+            # Humble Beginnings - Overanalyzing the Manifestations of the Unconscious (1998)
+            {"title": "Sleep It Off", "artist": "Humble Beginnings", "about": "Track 2 from 'Overanalyzing the Manifestations of the Unconscious' (1998)", "key": "C", "links": [("Apple Music", "https://music.apple.com/us/album/sleep-it-off/1740203014?i=1740203017")]},
+            {"title": "Laughing With Your Friends", "artist": "Humble Beginnings", "about": "Track 3 from 'Overanalyzing the Manifestations of the Unconscious' (1998)", "key": "A", "links": [("Apple Music", "https://music.apple.com/us/song/laughing-with-your-friends/1740203018")]},
+            {"title": "Three Thirty Four", "artist": "Humble Beginnings", "about": "Track 1 from 'Overanalyzing the Manifestations of the Unconscious' (1998)", "key": "F", "links": [("Spotify", "https://open.spotify.com/track/1RYVRmUvHQcqgMOgUu6YZg"), ("Apple Music", "https://music.apple.com/us/song/three-thirty-four/1740203015")]},
+            {"title": "Afterall", "artist": "Humble Beginnings", "about": "Track 4 from 'Overanalyzing the Manifestations of the Unconscious' (1998)", "key": "D", "links": [("Apple Music", "https://music.apple.com/us/song/afterall/1740203019"), ("Spotify", "https://open.spotify.com/track/3mY6YE8IUFQEVItcDaDl9C")]},
+            {"title": "Activate", "artist": "Humble Beginnings", "about": "Track 5 from 'Overanalyzing the Manifestations of the Unconscious' (1998)", "key": "C", "links": [("Spotify", "https://open.spotify.com/track/3KSiwFaSQwXlnYxMaxW6Wi"), ("Apple Music", "https://music.apple.com/us/song/activate/1740203020")]},
+            {"title": "Faith 98", "artist": "Humble Beginnings", "about": "Track 6 from 'Overanalyzing the Manifestations of the Unconscious' (1998)", "key": "B", "links": [("Spotify", "https://open.spotify.com/track/1eUtaonEYkKAsmt24DtxLB"), ("Apple Music", "https://music.apple.com/us/song/faith-98/1740203021")]},
+            
+            # A Promotional Tape Just For You (1997)
+            {"title": "America's Funniest Home Videos", "artist": "Humble Beginnings", "about": "From their tape 'A Promotional Tape Just For You' (5 Songs)(1997)", "key": "E", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-americas-funniest")]},
+            {"title": "Got It", "artist": "Humble Beginnings", "about": "From their tape 'A Promotional Tape Just For You' (5 Songs)(1997)", "key": "G", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-got-it")]},
+            {"title": "Anthem of a Young Republican", "artist": "Humble Beginnings", "about": "From their tape 'A Promotional Tape Just For You' (5 Songs) (1997)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-anthem")]},
+            {"title": "Shelter", "artist": "Humble Beginnings", "about": "From their tape 'A Promotional Tape Just For You' (5 Songs)(1997)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-shelter")]},
+            
+            # 5 Song Demo Tape (1997)
+            {"title": "I See Clearly", "artist": "Humble Beginnings", "about": "From their '5 Song Demo Tape' (1997)", "key": "F#", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-i-see-clearly")]},
+            {"title": "Oh Donna", "artist": "Humble Beginnings", "about": "From their '5 Song Demo Tape' (1997)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-oh-donna")]},
+            {"title": "16 Years Down", "artist": "Humble Beginnings", "about": "From their '5 Song Demo Tape' (1997)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-16-years-down")]},
+            
+            # Split 7" with Oblivion (1997)
+            {"title": "Gone Tomorrow", "artist": "Humble Beginnings", "about": "From their split 7 Inch w/ Oblivion (1997)", "key": "G", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-gone-tomorrow"), ("Other", "https://www.discogs.com/release/4159757-Oblivion-12-Humble-Beginnings-Oblivion-Humble-Beginnings")]},
+            {"title": "We Don't Want It", "artist": "Humble Beginnings", "about": "From their split 7 Inch w/ Oblivion (1997)", "key": "F", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-we-dont-want-it")]},
+            
+            # Age & Experience Vs Young & Cunning (1999)
+            {"title": "All That Way", "artist": "Humble Beginnings", "about": "From their split 7 Inch 'Age & Experience Vs Young & Cunning' (1999)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-all-that-way-2")]},
+            {"title": "Promise", "artist": "Humble Beginnings", "about": "From their split 7 Inch 'Age & Experience Vs Young & Cunning' (1999)", "key": "D", "links": [("Other", "https://www.discogs.com/release/2285338-Bracket-Humble-Beginnings-Age-Experience-Vs-Youth-Cunning"), ("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-promise")]},
+            {"title": "1987", "artist": "Humble Beginnings", "about": "From their split 7 Inch 'Age & Experience Vs Young & Cunning' (1999)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-1987")]},
+            {"title": "What Else Is There", "artist": "Humble Beginnings", "about": "From their split 7 Inch 'Age & Experience Vs Young & Cunning' (1999)", "key": "A", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-what-else-is-there")]},
+            {"title": "A Day at the Races", "artist": "Humble Beginnings", "about": "From their split 7 Inch 'Age & Experience Vs Young & Cunning' (1999)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-a-day-at-the-races")]},
+            
+            # Southern California EP (2001)
+            {"title": "Southern California", "artist": "Humble Beginnings", "about": "From their EP 'Southern California' (2001)", "key": "A#", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-southern-california-1"), ("Other", "https://www.discogs.com/release/12105895-Humble-Beginnings-Southern-California")]},
+            {"title": "Faith 68", "artist": "Humble Beginnings", "about": "From their EP 'Southern California' (2001)", "key": "C", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-faith-69")]},
+            {"title": "Angel Forever", "artist": "Humble Beginnings", "about": "From their EP 'Southern California' (2001)", "key": "Ab", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-angel-forever-1")]},
+            {"title": "Breakdown", "artist": "Humble Beginnings", "about": "From their EP 'Southern California' (2001)", "key": "C", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/breakdown")]},
+            
+            # We Wear Vans EP (2000)
+            {"title": "Together", "artist": "Humble Beginnings", "about": "From their EP 'We Wear Vans' (2000)", "key": "Am", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-together"), ("Other", "https://www.discogs.com/release/13805226-Humble-Beginnings-We-Wear-Vans")]},
+            {"title": "Holding On", "artist": "Humble Beginnings", "about": "From their EP 'We Wear Vans' (2000)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-holding-on")]},
+            {"title": "Taking the Long Way Home", "artist": "Humble Beginnings", "about": "From their EP 'We Wear Vans' (2000)", "key": "Am", "links": []},
+            {"title": "Downside of Pride", "artist": "Humble Beginnings", "about": "From their EP 'We Wear Vans' (2000)", "key": "A", "links": []},
+            
+            # Spontaneous Combustion (1996)
+            {"title": "Nowhere With Me", "artist": "Humble Beginnings", "about": "From their tape 'Spontaneous Combustion' (1996)", "key": "F#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-nowhere-with-me")]},
+            {"title": "Fat Bill", "artist": "Humble Beginnings", "about": "From their tape 'Spontaneous Combustion' (1996)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-fat-bill")]},
+            {"title": "Advocates and Adversaries", "artist": "Humble Beginnings", "about": "From their tape 'Spontaneous Combustion' (1996)", "key": "C", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-advocates-and-adversaries")]},
+            {"title": "Poster People", "artist": "Humble Beginnings", "about": "From their tape 'Spontaneous Combustion' (1996)", "key": "F#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-poster-people")]},
+            {"title": "Jerry", "artist": "Humble Beginnings", "about": "From their tape 'Spontaneous Combustion' (1996)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-jerry-live")]},
+            {"title": "I Tried So Hard", "artist": "Humble Beginnings", "about": "From their tape 'Spontaneous Combustion' (1996)", "key": "G#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-i-tried-so-hard-live")]},
+            {"title": "Scavenger Type", "artist": "Humble Beginnings", "about": "From their tape 'Spontaneous Combustion' (1996)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/humble-beginnings-scavengertype")]},
+            
+            # The Forever Endeavor - We Win When You Break EP (2002)
+            {"title": "Kappa Dirty", "artist": "The Forever Endeavor", "about": "From their EP 'We Win When You Break' (2002)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-kappa-dirty")]},
+            {"title": "Sarah", "artist": "The Forever Endeavor", "about": "From their EP 'We Win When You Break' (2002)", "key": "A", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-sarah")]},
+            {"title": "Rock Band", "artist": "The Forever Endeavor", "about": "From their EP 'We Win When You Break' (2002)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-rock-band")]},
+            {"title": "The Old Sound", "artist": "The Forever Endeavor", "about": "From their EP 'We Win When You Break' (2002)", "key": "F#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-the-old-sound")]},
+            {"title": "The Phi Eps", "artist": "The Forever Endeavor", "about": "From their EP 'We Win When You Break' (2002)", "key": "A", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-the-phi-eps")]},
+            {"title": "The Counterlife", "artist": "The Forever Endeavor", "about": "From their EP 'We Win When You Break' (2002)", "key": "B", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-the-counter-life")]},
+            {"title": "The Forever Endeavor", "artist": "The Forever Endeavor", "about": "From their EP 'We Win When You Break' (2002)", "key": "B", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-the-forever-endeavor")]},
+            
+            # Ills Of The Underground Split (2003)
+            {"title": "A Weekend or a Year", "artist": "The Forever Endeavor", "about": "From 'Ills Of The Underground' (Split CD w/ Patent Pending & The Rookie) (2003)", "key": "F", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-a-weekend-or-a-year"), ("Other", "https://www.discogs.com/release/22698716-The-Rookie-3Forever-Endeavor-Patent-Pending-Ills-Of-The-Underground")]},
+            {"title": "Timeline Divided", "artist": "The Forever Endeavor", "about": "From 'Ills Of The Underground' (Split CD w/ Patent Pending & The Rookie) (2003)", "key": "A", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-timeline-divided")]},
+            {"title": "The Bear", "artist": "The Forever Endeavor", "about": "From 'Ills Of The Underground' (Split CD w/ Patent Pending & The Rookie) (2003)", "key": "A", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-the-bear")]},
+            
+            # Boiler Room Demo EP (2004)
+            {"title": "The Fall Thaw", "artist": "The Forever Endeavor", "about": "From the 'Boiler Room Demo' EP (2004)", "key": "A#", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-the-fall-thaw")]},
+            {"title": "In Harmony", "artist": "The Forever Endeavor", "about": "From the 'Boiler Room Demo' EP (2004)", "key": "A", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-in-harmony")]},
+            
+            # Some Boys EP (2006)
+            {"title": "Some Boys", "artist": "The Forever Endeavor", "about": "From their EP 'Some Boys' (2006)", "key": "A#", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-some-boys")]},
+            {"title": "Thrills of the Underground", "artist": "The Forever Endeavor", "about": "From their EP 'Some Boys' (2006)", "key": "G#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-thrills-of-the-underground")]},
+            
+            # Culture AD Album (2007)
+            {"title": "Push Pull", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "F#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-push-pull")]},
+            {"title": "Starving in the Garden State", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "G#", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-starvin-in-the-garden-state")]},
+            {"title": "Hands Lace In July", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "A", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-hands-lace-in-july")]},
+            {"title": "Hell Ride", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "F#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-hell-ride")]},
+            {"title": "May Day", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "A", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-may-day")]},
+            {"title": "Maria Ave", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "Dm", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-maria-ave")]},
+            {"title": "Kelifornia", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "D", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-kellifornia")]},
+            {"title": "Beta Chain", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "A#", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-beta-chain")]},
+            {"title": "Boom For Real", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "G#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-boom-for-real")]},
+            {"title": "Lay It Down", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "F#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-lay-it-down")]},
+            {"title": "And To Earth Return", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "F#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-and-to-earth-you-will-return")]},
+            {"title": "Timeless Reminder", "artist": "The Forever Endeavor", "about": "From their album 'Culture AD' (2007)", "key": "F#m", "links": [("SoundCloud", "https://soundcloud.com/njpparchives/the-forever-endeavor-timeless-reminder")]},
+            
+            # Patent Pending - Save Each Other, The Whales Are Doing Fine (2006)
+            {"title": "Lights Out In Mississippi", "artist": "Patent Pending", "about": "From the album 'Save Each Other, The Whales Are Doing Fine' (2006)", "key": "A", "links": [("Other", "https://www.discogs.com/release/3664211-Patent-Pending-Save-Each-OtherWhales-Are-Doing-Fine")]},
+            {"title": "This Can't Happen Again", "artist": "Patent Pending", "about": "From the album 'Save Each Other, The Whales Are Doing Fine' (2006)", "key": "A", "links": []},
+            {"title": "Old And Out Of Tune", "artist": "Patent Pending", "about": "From the album 'Save Each Other, The Whales Are Doing Fine' (2006)", "key": "A", "links": []},
+            {"title": "The Safety Of Sleeping In", "artist": "Patent Pending", "about": "From the album 'Save Each Other, The Whales Are Doing Fine' (2006)", "key": None, "links": []},
+            {"title": "The L-Town Shakedown", "artist": "Patent Pending", "about": "From the album 'Save Each Other, The Whales Are Doing Fine' (2006)", "key": None, "links": []},
+            {"title": "Robert Ragosta Is A Ringtone", "artist": "Patent Pending", "about": "From the album 'Save Each Other, The Whales Are Doing Fine' (2006)", "key": None, "links": []},
+            {"title": "Samantha The Great", "artist": "Patent Pending", "about": "From the album 'Save Each Other, The Whales Are Doing Fine' (2006)", "key": None, "links": []},
+            {"title": "Sleep Well My Angel", "artist": "Patent Pending", "about": "From the album 'Save Each Other, The Whales Are Doing Fine' (2006)", "key": None, "links": []},
+            
+            # Patent Pending - Second Family (2011)
+            {"title": "Douchebag", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": "A", "links": [("Other", "https://www.discogs.com/master/612319-Patent-Pending-Second-Family")]},
+            {"title": "I Already Know", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Shake Weights And Moving Crates", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Cut Copy Paste", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Little Miss Impossible", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "We're Freaking Out", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Memory", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Set The Sun On Fire", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "This Love Can Save Us All", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Spin Me Around", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Valentine", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Second Family", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "One Less Heart To Break", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            {"title": "Dance Till We Die", "artist": "Patent Pending", "about": "From the album 'Second Family' (2011)", "key": None, "links": []},
+            
+            # Patent Pending - Brighter (2013)
+            {"title": "Brighter", "artist": "Patent Pending", "about": "From their album 'Brighter' (2013)", "key": "F#m", "links": [("Other", "https://www.discogs.com/release/5039995-Patent-Pending-Brighter")]},
+            {"title": "All-Star Hipster", "artist": "Patent Pending", "about": "From their album 'Brighter' (2013)", "key": None, "links": []},
+            
+            # Patent Pending - Attack of the Awesome (2009)
+            {"title": "Anti-Everything", "artist": "Patent Pending", "about": "From their album 'Attack of the Awesome' (2009)", "key": "A#", "links": [("Other", "https://www.discogs.com/release/1884512-Patent-Pending-Attack-Of-The-Awesome")]},
+            {"title": "The Way You Make Me Shake", "artist": "Patent Pending", "about": "From their EP 'Attack of the Awesome' (2009)", "key": "G", "links": []},
+            {"title": "Drop Dead", "artist": "Patent Pending", "about": "From their EP 'Attack of the Awesome' (2009)", "key": None, "links": []},
+            {"title": "Sunset Summer", "artist": "Patent Pending", "about": "From their EP 'Attack of the Awesome' (2009)", "key": None, "links": []},
+            {"title": "Hey Six", "artist": "Patent Pending", "about": "From their EP 'Attack of the Awesome' (2009)", "key": None, "links": []},
+            {"title": "Therefore, I Party", "artist": "Patent Pending", "about": "From their EP 'Attack of the Awesome' (2009)", "key": None, "links": []},
+            
+            # Patent Pending - Singles and Other
+            {"title": "She's A Ho Ho Ho", "artist": "Patent Pending", "about": "From their single 'She's A Ho Ho Ho' (2007)", "key": None, "links": [("Other", "https://www.discogs.com/release/11230605-Patent-Pending-Shes-A-Ho-Ho-Ho-Merry-Christmas")]},
+            {"title": "Pools are Made for Hopping", "artist": "Patent Pending", "about": "From their single 'Pools are Made for Hopping' (2013)", "key": "A#", "links": []},
+            
+            # Patent Pending - I'm Not Alone EP (2010)
+            {"title": "Walk-In Closet", "artist": "Patent Pending", "about": "From their EP 'I'm Not Alone' (2010)", "key": "A", "links": []},
+            {"title": "I'm Not Alone", "artist": "Patent Pending", "about": "From their EP 'I'm Not Alone' (2010)", "key": None, "links": []},
+            {"title": "She Only Wants My Blood", "artist": "Patent Pending", "about": "From their EP 'I'm Not Alone' (2010)", "key": None, "links": []},
+            {"title": "Air Underneath My Feet", "artist": "Patent Pending", "about": "From their EP 'I'm Not Alone' (2010)", "key": None, "links": []},
+            
+            # Dickenz - Worth the Wounds EP (2009)
+            {"title": "Worth the Wounds", "artist": "Dickenz", "about": "From the EP 'Worth the Wounds' (2009)", "key": "A", "links": []},
+            {"title": "Stay Gone", "artist": "Dickenz", "about": "From the EP 'Worth the Wounds' (2009)", "key": "G#m", "links": []},
+            {"title": "True Believer", "artist": "Dickenz", "about": "From the EP 'Worth the Wounds' (2009)", "key": None, "links": []},
+            {"title": "Hold On Laurie", "artist": "Dickenz", "about": "From the EP 'Worth the Wounds' (2009)", "key": "F#m", "links": []},
+            {"title": "Always Enough", "artist": "Dickenz", "about": "From the EP 'Worth the Wounds' (2009)", "key": "F#m", "links": []},
+            
+            # Dickenz - Jersey Tuff EP (2010)
+            {"title": "Wings of an Eagle", "artist": "Dickenz", "about": "From the EP 'Jersey Tuff' (2010)", "key": None, "links": []},
+            {"title": "Spirit of the Warrior", "artist": "Dickenz", "about": "From the EP 'Jersey Tuff' (2010)", "key": None, "links": []},
+            {"title": "Roundhouse to the Heart", "artist": "Dickenz", "about": "From the EP 'Jersey Tuff' (2010)", "key": None, "links": []},
+            
+            # Dickenz - Low Country High EP (2013)
+            {"title": "Sound Beach", "artist": "Dickenz", "about": "From the EP 'Low Country High' (2013)", "key": "F#m", "links": []},
+            
+            # Dickenz - The Johny Split EP (2006)
+            {"title": "Stumble and Fade", "artist": "Dickenz", "about": "From the EP 'The Johny Split' (2006)", "key": None, "links": []},
+            
+            # Dare County - Dare County EP (2018)
+            {"title": "Living Like", "artist": "Dare County", "about": "From the EP 'Dare County' (2018)", "key": None, "links": []},
+            {"title": "Buddy", "artist": "Dare County", "about": "From the EP 'Dare County' (2018)", "key": "F#m", "links": []},
+            {"title": "Farmland and Heartbreak", "artist": "Dare County", "about": "From the EP 'Dare County' (2018)", "key": "F#m", "links": []},
+            {"title": "Pickup Artist", "artist": "Dare County", "about": "From the EP 'Dare County' (2018)", "key": None, "links": [("Spotify", "https://open.spotify.com/track/0t7yvXwjhBbyEIsGiRtQTc")]},
+            
+            # Dare County - Singles
+            {"title": "Worth the Wounds", "artist": "Dare County", "about": "Single release on Severman Records (2023)", "key": None, "links": [("Spotify", "https://open.spotify.com/track/3m0xMbqIRyBzX5JfYcml0k")]},
+            {"title": "Stay Gone", "artist": "Dare County", "about": "Single release on Severman (2024)", "key": None, "links": [("Spotify", "https://open.spotify.com/track/1AGUOXqAk2zvrefMEfGUJb")]},
+            {"title": "Living Like", "artist": "Dare County", "about": "Single release on Seal Network (2022)", "key": None, "links": [("Spotify", "https://open.spotify.com/album/4ipVvhLMpuuCT8EGgUXWbr")]},
+            {"title": "Gravity", "artist": "Dare County", "about": "Single self-release (2022)", "key": None, "links": [("Spotify", "https://open.spotify.com/album/0t371DGJTQ4KWkweyyZsUW")]},
+            {"title": "Come Running", "artist": "Dare County", "about": "Track completed with Aaron Kruk (2024)", "key": None, "links": []},
+            
+            # TRPX - Grenadine Album (2021)
+            {"title": "Blink Shirt", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "All Aboard", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "Getting Better", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "Full Bullshit", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "Anarchy in the NJ", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "When You Were Still Mine", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "Ironbound", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "Come Running", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "Drive Off", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            {"title": "Gravity", "artist": "TRPX", "about": "From the Album 'Grenadine' (2021)", "key": None, "links": []},
+            
+            # Beautiful's Dream - Single (2025)
+            {"title": "Whipped Cream Hair", "artist": "Beautiful's Dream", "about": "Single (2025)", "key": None, "links": [("Spotify", "https://open.spotify.com/track/5eVwDcQ91ytQuZ69vFIJhP")]},
+        ]
+
+        # Create all songs and links
+        for song_data in songs_data:
+            # Determine genre based on artist
+            artist_name = song_data["artist"]
+            if artist_name in ["Dickenz"]:
+                song_genre = indie
+            elif artist_name in ["Dare County"]:
+                # Check if it's EDM singles or country EP tracks
+                about_text = song_data["about"].lower()
+                if "severman" in about_text or "seal network" in about_text or "single" in about_text:
+                    song_genre = edm
+                else:
+                    song_genre = country
+            elif artist_name in ["Beautiful's Dream"]:
+                song_genre = hip_hop
+            elif artist_name in ["TRPX"]:
+                song_genre = punk
+            else:
+                song_genre = punk  # Default for Humble Beginnings, Forever Endeavor, Patent Pending
+            
+            # Determine status based on artist/about
+            about_text = song_data["about"].lower()
+            if artist_name == "TRPX" or "johny split" in about_text:
+                song_status = doh
+            elif artist_name == "Dare County" and "completed with aaron kruk" in about_text:
+                song_status = completed
+            else:
+                song_status = released
+            
+            song = Song(
+                title=song_data["title"],
+                artist=song_data["artist"],
+                about=song_data["about"],
+                lyrics=None,
+                bpm=None,
+                key=song_data.get("key"),
+                user=josh,
+                genre=song_genre,
+                status=song_status
+            )
+            db.session.add(song)
+            db.session.commit()
+            
+            # Add links for this song
+            for link_type, link_url in song_data["links"]:
+                link = Link(url_type=link_type, url_link=link_url, song=song)
+                db.session.add(link)
+            
+            db.session.commit()
+
+        print("✅ Database seeded successfully!")
+        print(f"Created {User.query.count()} users")
+        print(f"Created {Status.query.count()} statuses")
+        print(f"Created {Genre.query.count()} genres")
+        print(f"Created {Song.query.count()} songs")
+        print(f"Created {Link.query.count()} links")
+
+
+if __name__ == '__main__':
     seed_database()
