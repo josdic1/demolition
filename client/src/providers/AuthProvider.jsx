@@ -50,9 +50,8 @@ export function AuthProvider({ children }) {
             });
             if (res.ok) {
                 const data = await res.json();
-                const { songs, ...info } = data;
-                setUserInfo(info);
-                setUserSongs(songs || []);
+                setUserInfo(data.user);
+                setUserSongs(data.user.songs || []);
                 return { success: true };
             } else {
                 const error = await res.json();
@@ -215,7 +214,7 @@ const createLink = async (songId, linkData) => {
         setInEditMode,
         createLink
     }), 
-    [userInfo, userSongs, loading, loggedIn, inEditMode]);
+    [userInfo, userSongs, loading, loggedIn, inEditMode, signup, inSignupMode]);
 
     return (
         <AuthContext.Provider value={value}>

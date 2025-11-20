@@ -1,21 +1,23 @@
 import '../style/UserButtons.css';
 
-export function UserStatusButtons({ statuses, onSelect }) {
-    if (!statuses || statuses.length === 0) {
-        return <p>No statuses available.</p>;
-    }
-
-    return (
-        <div className="user-status-buttons">
-            {statuses.map((status) => (
-                <button 
-                    key={status.id} 
-                    className="status-button" 
-                    onClick={() => onSelect(status)}
-                >
-                    {status.name}
-                </button>
-            ))}
-        </div>
-    );
+export function UserStatusButtons({ statuses, onSelect, activeFilter }) {
+  return (
+    <div className="user-status-buttons">  
+      <button
+        className={`status-button ${activeFilter === 'all' ? 'active' : ''}`}  
+        onClick={() => onSelect('all')}
+      >
+        All Statuses
+      </button>
+      {statuses.map(status => (
+        <button
+          key={status.id}
+          className={`status-button ${activeFilter === status.id ? 'active' : ''}`} 
+          onClick={() => onSelect(status.id)}
+        >
+          {status.name}
+        </button>
+      ))}
+    </div>
+  );
 }

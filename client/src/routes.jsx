@@ -6,6 +6,7 @@ import { LoginPage } from './pages/LoginPage.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { SongCard } from './pages/SongCard.jsx';
 import { SongForm } from './components/SongForm.jsx';
+import { SignupPage } from './pages/SignupPage.jsx';
 
 export const routes = [
     {
@@ -23,6 +24,9 @@ export const routes = [
             }, {
                 path: 'login',
                 element: <LoginPage />,
+            }, {
+                 path: 'signup',
+                element: <SignupPage />,
             }, {
                 path: 'songs/:id',
                 element: 

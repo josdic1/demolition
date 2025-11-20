@@ -1,71 +1,4 @@
-css/* UserGenreButtons.css & UserStatusButtons.css */
-
-.user-genre-buttons,
-.user-status-buttons {
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.user-genre-buttons {
-    border-left: 4px solid #007bff;
-}
-
-.user-status-buttons {
-    border-left: 4px solid #28a745;
-}
-
-.genre-button,
-.status-button {
-    padding: 0.6rem 1.2rem;
-    margin: 0.3rem;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-    color: #333;
-    font-family: monospace;
-    font-size: 0.9rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.genre-button:hover {
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
-}
-
-.status-button:hover {
-    background-color: #28a745;
-    color: white;
-    border-color: #28a745;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
-}
-
-.genre-button:active,
-.status-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-/* No songs message */
-.user-genre-buttons p,
-.user-status-buttons p {
-    padding: 1rem;
-    margin: 0;
-    text-align: center;
-    font-family: monospace;
-    color: #666;
-    font-style: italic;
-}
-
-/* UserGenreButtons.css & UserStatusButtons.css */
+/* UserButtons.css - Button styles AND search bar */
 
 .user-genre-buttons,
 .user-status-buttons {
@@ -122,8 +55,7 @@ css/* UserGenreButtons.css & UserStatusButtons.css */
 }
 
 /* Active state for selected filter */
-.genre-button.active,
-.status-button.active {
+.genre-button.active {
     background-color: #007bff;
     color: white;
     border-color: #007bff;
@@ -131,10 +63,11 @@ css/* UserGenreButtons.css & UserStatusButtons.css */
 
 .status-button.active {
     background-color: #28a745;
+    color: white;
     border-color: #28a745;
 }
 
-/* No songs message */
+/* No songs message inside button containers */
 .user-genre-buttons p,
 .user-status-buttons p {
     padding: 1rem;
@@ -145,46 +78,9 @@ css/* UserGenreButtons.css & UserStatusButtons.css */
     font-style: italic;
 }
 
-/* Active Filter Display */
-.active-filter {
-    padding: 0.8rem 1.2rem;
-    margin-bottom: 1rem;
-    background-color: #fff3cd;
-    border-left: 4px solid #ffc107;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-family: monospace;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.active-filter strong {
-    color: #856404;
-    margin: 0 0.5rem;
-}
-
-.active-filter button {
-    padding: 0.3rem 0.8rem;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 0.85rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.active-filter button:hover {
-    background-color: #c82333;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
-}
-
 /* Search Bar */
 .song-search-bar {
+    position: relative;
     padding: 1rem;
     margin-bottom: 1rem;
     background-color: white;
@@ -216,31 +112,22 @@ css/* UserGenreButtons.css & UserStatusButtons.css */
     font-style: italic;
 }
 
-/* Sort Button */
-.sort-button {
-    padding: 0.8rem 1.5rem;
-    margin-bottom: 1rem;
-    background-color: white;
-    color: #333;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 0.95rem;
-    font-weight: bold;
+.clear-search {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.5rem;
     cursor: pointer;
+    padding: 0;
+    line-height: 1;
     transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.sort-button:hover {
-    background-color: #6c757d;
-    color: white;
-    border-color: #6c757d;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
-}
-
-.sort-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+.clear-search:hover {
+    color: #dc3545;
+    transform: translateY(-50%) scale(1.2);
 }

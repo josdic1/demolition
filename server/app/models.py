@@ -141,7 +141,7 @@ class LinkSchema(ma.SQLAlchemyAutoSchema):
     id = ma.auto_field(dump_only=True)
     url_type = ma.auto_field()
     url_link = ma.auto_field()
-    song_id = ma.auto_field()
+    song_id = ma.auto_field(dump_only=True) 
 
 class SongSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -168,7 +168,7 @@ class SongSchema(ma.SQLAlchemyAutoSchema):
     user = ma.Nested('UserSchema', only=['id', 'name', 'email'], dump_only=True)
     genre = ma.Nested(GenreSchema, only=['id', 'name'], dump_only=True)
     status = ma.Nested(StatusSchema, only=['id', 'name'], dump_only=True)
-    links = ma.Nested(LinkSchema, many=True, dump_only=True)
+    links = ma.Nested(LinkSchema, many=True)
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

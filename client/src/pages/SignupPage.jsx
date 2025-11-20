@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import '../style/LoginPage.css';
 
-export function LoginPage() {
-    const { login, loggedIn, signup } = useAuth();
+export function SignupPage() {
+    const { loggedIn, signup } = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+        name: '',
         email: '',
         password: ''
     });
@@ -30,7 +31,7 @@ useEffect(() => {
         e.preventDefault();
         setError(null);
         
-        const result = await login(formData); 
+        const result = await signup(formData); 
         
         if (result.success) {
             navigate('/');
@@ -38,13 +39,23 @@ useEffect(() => {
             setError(result.error);
         }
     };
+
    return (
   <div className="login-page-container">
     <div className="login-card">
-      <h1>Login</h1>
+      <h1>Sign up</h1>
       <form onSubmit={handleSubmit}>
         {error && <div className="login-error">{error}</div>}
         
+        <input
+          name="name"
+          type="name"
+          placeholder="Name"
+          value={formData.name}
+          onChange={onFormChange}
+          required
+        />
+
         <input
           name="email"
           type="email"
@@ -63,9 +74,9 @@ useEffect(() => {
           required
         />
         
-        <button type="submit">Login</button>
+        <button type="submit">Confirm User</button>
         
-        <p>Don't have an account? <a href="/signup" onClick={signup}>Sign up</a></p>
+        <p>Return to <a href="/login">Login</a></p>
       </form>
     </div>
   </div>

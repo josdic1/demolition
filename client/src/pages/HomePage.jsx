@@ -1,6 +1,6 @@
 import { useAuth } from '../hooks/useAuth.jsx';
 import { useSong } from '../hooks/useSong.jsx';
-import { useState, useMemo} from 'react';
+import { useState, useMemo } from 'react';
 import { StateBar } from '../components/StateBar.jsx';
 import { SongList } from '../components/SongList.jsx';
 import { SongSearchBar } from '../components/SongSearchBar.jsx';
@@ -12,10 +12,10 @@ export function HomePage() {
   const { userInfo, userSongs, loading, deleteSong, loggedIn } = useAuth();
   const { genres, statuses, selectedSong } = useSong();
   const [showStateBar, setShowStateBar] = useState(false);
-  const [buttonValue, setButtonValue] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState('all');  
+  const [selectedStatus, setSelectedStatus] = useState('all'); 
   const [searchValue, setSearchValue] = useState('');
   const [sortOrder, setSortOrder] = useState('');
-  
 
   // Clean unique extraction using Map
   const uniqueGenres = useMemo(() => {
@@ -26,8 +26,6 @@ export function HomePage() {
     );
     return [...map.values()];
   }, [userSongs]);
-
-
 
   const uniqueStatuses = useMemo(() => {
     if (!userSongs) return [];
@@ -41,36 +39,30 @@ export function HomePage() {
   const finalSongs = useMemo(() => {
     let result = userSongs || [];
     
-    // Step 1: Button filter
-    if (buttonValue) {
-        // Check if it's a genre or status by seeing which array it's in
-        const isGenre = uniqueGenres.some(g => g.id === buttonValue.id);
-        const isStatus = uniqueStatuses.some(st => st.id === buttonValue.id);
-        
-        if (isGenre) {
-            result = result.filter(s => s.genre?.id === buttonValue.id);
-        } else if (isStatus) {
-            result = result.filter(s => s.status?.id === buttonValue.id);
-        }
-    }
+    // Filter by both genre AND status
+    result = result.filter(song => {
+      const matchesGenre = selectedGenre === 'all' || song.genre?.id === selectedGenre;
+      const matchesStatus = selectedStatus === 'all' || song.status?.id === selectedStatus;
+      return matchesGenre && matchesStatus;  // ← Both must match!
+    });
     
-    // Step 2: Search filter
+    // Search filter
     if (searchValue) {
-        result = result.filter(s =>
-            s.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
-            s.artist?.toLowerCase().includes(searchValue.toLowerCase())
-        );
+      result = result.filter(s =>
+        s.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
+        s.artist?.toLowerCase().includes(searchValue.toLowerCase())
+      );
     }
     
-    // Step 3: Sort
+    // Sort
     if (sortOrder === 'asc') {
-        result.sort((a, b) => a.title.localeCompare(b.title));
+      result = [...result].sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortOrder === 'desc') {
-        result.sort((a, b) => b.title.localeCompare(a.title));
+      result = [...result].sort((a, b) => b.title.localeCompare(a.title));
     }
     
     return result;
-}, [userSongs, buttonValue, searchValue, sortOrder, uniqueGenres, uniqueStatuses]);
+  }, [userSongs, selectedGenre, selectedStatus, searchValue, sortOrder]);
 
   return (
     <div className="homepage-container">
@@ -90,7 +82,8 @@ export function HomePage() {
           genres={genres}
           statuses={statuses}
           selectedSong={selectedSong}
-          buttonValue={buttonValue}
+          selectedGenre={selectedGenre}
+          selectedStatus={selectedStatus}
           searchValue={searchValue}
           sortOrder={sortOrder}
         />
@@ -98,43 +91,57 @@ export function HomePage() {
 
       <UserGenreButtons 
         genres={uniqueGenres}
-        onSelect={setButtonValue}
-        activeFilter={buttonValue}
+        onSelect={setSelectedGenre}      
+        activeFilter={selectedGenre}     
       />
 
       <UserStatusButtons 
         statuses={uniqueStatuses}
-        onSelect={setButtonValue}
-        activeFilter={buttonValue}
+        onSelect={setSelectedStatus}   
+        activeFilter={selectedStatus}    
       />
 
-      {buttonValue && (
-        <>
-          <div className="active-filter">
-            Filtering by: <strong>{buttonValue.name}</strong>
-            <button onClick={() => setButtonValue(null)}>✕</button>
-          </div>
+      {/* Show active filters */}
+      {(selectedGenre !== 'all' || selectedStatus !== 'all') && (
+        <div className="active-filters">
+          <span>Filtering by:</span>
+          {selectedGenre !== 'all' && (
+            <div className="filter-tag">
+              <strong>{uniqueGenres.find(g => g.id === selectedGenre)?.name}</strong>
+              <button onClick={() => setSelectedGenre('all')}>✕</button>
+            </div>
+          )}
+          {selectedStatus !== 'all' && (
+            <div className="filter-tag">
+              <strong>{uniqueStatuses.find(s => s.id === selectedStatus)?.name}</strong>
+              <button onClick={() => setSelectedStatus('all')}>✕</button>
+            </div>
+          )}
+        </div>
+      )}
 
-          <div className="song-search-bar">
-            <SongSearchBar 
-              searchValue={searchValue}
-              onSearch={setSearchValue}
-            />
-          </div>
-          
-          <button 
-            className="sort-button"
-            onClick={() => {
-              if (sortOrder === '') setSortOrder('asc');
-              else if (sortOrder === 'asc') setSortOrder('desc');
-              else setSortOrder('');
-            }}
-          >
-            Sort: {sortOrder === 'asc' ? '↑ A-Z' : sortOrder === 'desc' ? '↓ Z-A' : '—'}
-          </button>
+      <div className="song-search-bar">
+        <SongSearchBar 
+          searchValue={searchValue}
+          onSearch={setSearchValue}
+        />
+      </div>
+      
+      <button 
+        className="sort-button"
+        onClick={() => {
+          if (sortOrder === '') setSortOrder('asc');
+          else if (sortOrder === 'asc') setSortOrder('desc');
+          else setSortOrder('');
+        }}
+      >
+        Sort: {sortOrder === 'asc' ? '↑ A-Z' : sortOrder === 'desc' ? '↓ Z-A' : '—'}
+      </button>
 
-          <SongList songs={finalSongs} deleteSong={deleteSong} />
-        </>
+      <SongList songs={finalSongs} deleteSong={deleteSong} />
+
+      {finalSongs.length === 0 && (
+        <p className="no-songs">No songs match your filters.</p>
       )}
     </div>
   );

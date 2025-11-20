@@ -96,6 +96,7 @@ def get_song_keys():
 @bp.route('/songs', methods=['POST'])
 def create_song():
     data = request.get_json()
+    print("Received data:", data)  # ← Add this
     
     try:
         new_song = song_schema.load(data)
@@ -103,6 +104,7 @@ def create_song():
         db.session.commit()
         return jsonify(song_schema.dump(new_song)), 201
     except ValidationError as err:
+        print("Validation error:", err.messages)  # ← Add this
         return jsonify({"errors": err.messages}), 400
 
 # === Update Song ===
