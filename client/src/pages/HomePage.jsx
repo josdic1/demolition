@@ -18,6 +18,7 @@ export function HomePage() {
   const [searchValue, setSearchValue] = useState('');
   const [sortOrder, setSortOrder] = useState('');
   const navigate = useNavigate();
+  
   // Clean unique extraction using Map
   const uniqueGenres = useMemo(() => {
     if (!userSongs) return [];
@@ -78,7 +79,7 @@ export function HomePage() {
  
 
       <UserGenreButtons 
-        genres={uniqueGenres}
+        genres={uniqueGenres }
         onSelect={setSelectedGenre}      
         activeFilter={selectedGenre}     
       />
