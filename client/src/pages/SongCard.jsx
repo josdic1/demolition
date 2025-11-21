@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.jsx';
-import '../style/SongCard.css';
+
 
 export function SongCard() {
   const { userSongs, deleteSong, setInEditMode } = useAuth();

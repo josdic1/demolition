@@ -1,7 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import '../style/LoginPage.css';
 
 export function LoginPage() {
     const { login, loggedIn, signup } = useAuth();

@@ -1,5 +1,5 @@
 
-import '../style/StateBar.css';
+
 
 export function StateBar({ userInfo, userSongs,loading, loggedIn, inEditMode, genres, statuses, selectedSong, buttonValue, searchValue, sortOrder }) {
 

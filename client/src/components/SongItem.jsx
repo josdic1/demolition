@@ -1,7 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import '../style/SongItem.css';
+
 
 
 export function SongItem({ song, deleteSong }) {

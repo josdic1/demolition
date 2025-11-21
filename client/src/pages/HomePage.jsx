@@ -8,7 +8,7 @@ import { SongSearchBar } from '../components/SongSearchBar.jsx';
 import { UserGenreButtons } from '../components/UserGenreButtons.jsx';
 import { UserStatusButtons } from '../components/UserStatusButtons.jsx';
 import { Plus } from 'lucide-react';
-import '../style/HomePage.css';
+
 
 
 export function HomePage() {

@@ -1,4 +1,3 @@
-import '../style/UserButtons.css';
 
 export function UserGenreButtons({ genres, onSelect, activeFilter }) {
   return (
