@@ -1,4 +1,4 @@
-from flask import Blueprint, session, request, jsonify
+from flask import Blueprint, session, request, jsonify, render_template
 from app.models import User, Song, Genre, Status, Link
 from app.models import user_schema, song_schema, genre_schema, status_schema, link_schema
 from app.models import users_schema, songs_schema, genres_schema, statuses_schema, links_schema
@@ -313,3 +313,5 @@ def delete_link(id):
     db.session.delete(link)
     db.session.commit()
     return jsonify({"message": "Link deleted"}), 200
+
+
