@@ -1,8 +1,7 @@
 import { useAuth } from '../hooks/useAuth.jsx';
 import { useSong } from '../hooks/useSong.jsx';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { StateBar } from '../components/StateBar.jsx';
 import { SongList } from '../components/SongList.jsx';
 import { SongSearchBar } from '../components/SongSearchBar.jsx';
 import { UserGenreButtons } from '../components/UserGenreButtons.jsx';
@@ -13,8 +12,7 @@ import { Plus } from 'lucide-react';
 
 export function HomePage() {
   const { userInfo, userSongs, loading, deleteSong, loggedIn } = useAuth();
-  const { genres, statuses, selectedSong } = useSong();
-  const [showStateBar, setShowStateBar] = useState(false);
+  const { genres, statuses } = useSong();
   const [selectedGenre, setSelectedGenre] = useState('all');  
   const [selectedStatus, setSelectedStatus] = useState('all'); 
   const [searchValue, setSearchValue] = useState('');
@@ -29,6 +27,7 @@ export function HomePage() {
     );
     return [...map.values()];
   }, [userSongs]);
+
 
   const uniqueStatuses = useMemo(() => {
     if (!userSongs) return [];
@@ -67,30 +66,16 @@ export function HomePage() {
     return result;
   }, [userSongs, selectedGenre, selectedStatus, searchValue, sortOrder]);
 
+
+
   return (
     <div className="homepage-container">
       <div className="homepage-header">
         <p className="homepage-welcome">Welcome, {userInfo?.name || 'Guest'}!</p>
-        <button className="toggle-button" onClick={() => setShowStateBar(v => !v)}>
-          {showStateBar ? 'Hide' : 'Show'} State Bar
-        </button>
+
       </div>
 
-      {showStateBar && (
-        <StateBar 
-          userInfo={userInfo}
-          userSongs={userSongs}
-          loading={loading}
-          loggedIn={loggedIn}
-          genres={genres}
-          statuses={statuses}
-          selectedSong={selectedSong}
-          selectedGenre={selectedGenre}
-          selectedStatus={selectedStatus}
-          searchValue={searchValue}
-          sortOrder={sortOrder}
-        />
-      )}
+ 
 
       <UserGenreButtons 
         genres={uniqueGenres}

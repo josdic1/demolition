@@ -29,6 +29,7 @@ export function SongList({ songs, deleteSong }) {
                             key={song.id} 
                             song={song}
                             deleteSong={deleteSong}
+                    
                         />
                     ))}
                 </tbody>        

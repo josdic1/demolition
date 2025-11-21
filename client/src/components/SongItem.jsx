@@ -10,6 +10,10 @@ export function SongItem({ song, deleteSong }) {
     const navigate = useNavigate();
 
 
+    function onViewClick() {
+        navigate(`/songs/${song.id}`)
+    }
+
     function onEditClick() {
         setInEditMode(true);
         navigate(`/songs/${song.id}/edit`)
@@ -48,7 +52,7 @@ export function SongItem({ song, deleteSong }) {
             </>
         )}
     </td>
-    <td className="song-item-actions"><button onClick={() => navigate(`/songs/${song.id}`)}>View</button></td>
+    <td className="song-item-actions"><button onClick={onViewClick}>View</button></td>
     <td className="song-item-actions"><button onClick={onEditClick}>Edit</button></td>
     <td className="song-item-actions"><button onClick={handleDeleteSong}>Delete</button></td>
         <td className="song-item-date">

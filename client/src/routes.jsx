@@ -3,6 +3,7 @@ import { ErrorPage } from './pages/ErrorPage.jsx';
 import { HomePage } from './pages/HomePage.jsx';
 import { LinkForm } from './components/LinkForm.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
+import { Overview} from './pages/Overview.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { SongCard } from './pages/SongCard.jsx';
 import { SongForm } from './components/SongForm.jsx';
@@ -50,6 +51,12 @@ export const routes = [
                 element: 
                     <ProtectedRoute>
                         <LinkForm />
+                    </ProtectedRoute>,
+            }, {
+                path: 'overview',
+                element: 
+                    <ProtectedRoute>
+                        <Overview />
                     </ProtectedRoute>,
             }
         ],

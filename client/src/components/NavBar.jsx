@@ -16,7 +16,7 @@ export function NavBar() {
           <NavLink to="/">Home</NavLink>
           <NavLink to="/songs">Add Song</NavLink>
           <NavLink to="http://localhost:5555/command">Command</NavLink>
-          <NavLink to="/artists">Artists</NavLink>
+          <NavLink to="/overview">Overview</NavLink>
           <button type='button' onClick={logout}>Logout</button> 
         </nav>
       )}

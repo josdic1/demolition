@@ -5,7 +5,6 @@ export function SongProvider({ children }) {
   const [genres, setGenres] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [songKeys, setSongKeys] = useState([]);
-  const [selectedSong, setSelectedSong] = useState(null);
   const [linkTypes, setLinkTypes] = useState([]);
 
   const API_URL = "http://localhost:5555";
@@ -50,11 +49,9 @@ export function SongProvider({ children }) {
     linkTypes,
     statuses,
     songKeys,
-    selectedSong,
-    setSelectedSong,
     fetchFormData  
   }), 
-  [genres, statuses, selectedSong, linkTypes, songKeys]);
+  [genres, statuses, linkTypes, songKeys]);
 
   return (
     <SongContext.Provider value={value}>
